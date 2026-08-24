@@ -1,0 +1,132 @@
+.hero-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 520px;
+  min-height: 440px;
+  position: relative;
+}
+
+.carousel-center {
+  flex: 1;
+  text-align: center;
+  max-width: 340px;
+}
+
+.carousel-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  background: var(--white);
+  border: 1px solid var(--green-border);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-pill);
+  margin-bottom: 0.75rem;
+}
+
+.carousel-plate {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto 1rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--green-200);
+  background: var(--green-50);
+}
+
+.carousel-plate-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carousel-dish-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0 0 0.35rem;
+}
+
+.carousel-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.carousel-price {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--primary-deep);
+  letter-spacing: -0.02em;
+}
+
+.carousel-add-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.carousel-add-btn:hover {
+  background: var(--primary-dark);
+}
+
+.carousel-upnext {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  flex-shrink: 0;
+  padding-top: 2.5rem;
+}
+
+.carousel-upnext-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--green-border);
+}
+
+.carousel-upnext-img--dim {
+  opacity: 0.5;
+}
+
+.carousel-arrow {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--primary-deep);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-arrow:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+@media (max-width: 640px) {
+  .carousel-upnext {
+    display: none;
+  }
+
+  .carousel-plate {
+    max-width: 260px;
+  }
+}

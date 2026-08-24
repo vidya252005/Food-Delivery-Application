@@ -1,0 +1,141 @@
+.verification-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.verification-header h1 {
+  margin: 0 0 0.5rem;
+}
+
+.verification-header p {
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.verification-status-banner {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  text-transform: capitalize;
+}
+
+.verification-status-banner.status-verified {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #047857;
+}
+
+.verification-status-banner.status-rejected {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.request-meta {
+  display: block;
+  font-size: 0.85rem;
+  margin-top: 0.35rem;
+  text-transform: none;
+  opacity: 0.85;
+}
+
+.verification-form {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+.verification-form h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.form-hint {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 1.25rem;
+}
+
+.criterion-block {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.criterion-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.evidence-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.notes-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 1.25rem 0;
+}
+
+.notes-label textarea {
+  font-weight: 400;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  resize: vertical;
+}
+
+.verification-error {
+  color: #b91c1c;
+  background: #fef2f2;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+.verification-success {
+  color: #047857;
+  background: #ecfdf5;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+.verified-message,
+.pending-message {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.verified-message {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.pending-message {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.review-notes {
+  background: #f3f4f6;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}

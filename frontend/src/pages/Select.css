@@ -1,0 +1,121 @@
+.select-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.select-hero {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.select-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #92400e;
+  margin: 0 0 0.5rem;
+}
+
+.select-hero h1 {
+  font-size: 2.25rem;
+  margin: 0 0 0.75rem;
+  color: var(--text-heading, #111827);
+}
+
+.select-subtitle {
+  color: #6b7280;
+  max-width: 520px;
+  margin: 0 auto 1.5rem;
+  line-height: 1.5;
+}
+
+.select-cta {
+  font-size: 1rem;
+  padding: 0.85rem 2rem;
+}
+
+.select-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.select-status.active span {
+  font-weight: 700;
+  color: var(--color-primary-dark, #1a6b3c);
+}
+
+.select-benefits ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.select-benefits li {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.select-benefits h2,
+.select-restaurants h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.select-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.select-card {
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.15s;
+}
+
+.select-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.select-card-img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+
+.select-card-body {
+  padding: 0.75rem 1rem 1rem;
+}
+
+.select-card-body h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.select-distance {
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+.error-banner {
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}

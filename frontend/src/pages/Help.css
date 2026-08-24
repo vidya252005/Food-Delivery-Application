@@ -1,0 +1,124 @@
+.help-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--color-bg-page) 0%, var(--color-accent-light) 100%);
+    padding: 50px 20px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .help-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    max-width: 800px;
+    width: 100%;
+    padding: 40px 50px;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .help-container h1 {
+    text-align: center;
+    background: var(--primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .intro-text {
+    text-align: center;
+    color: #555;
+    margin-bottom: 40px;
+  }
+  
+  /* FAQ */
+  .faq-section {
+    margin-bottom: 40px;
+  }
+  
+  .faq-section h2 {
+    font-size: 1.6rem;
+    color: #222;
+    margin-bottom: 15px;
+  }
+  
+  details {
+    background: var(--color-accent-light);
+    border: 1px solid var(--color-accent-muted);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  details[open] {
+    background: var(--color-accent-light);
+  }
+  
+  details summary {
+    font-weight: 600;
+    color: #444;
+  }
+  
+  details p {
+    margin-top: 8px;
+    color: #555;
+  }
+  
+  /* Contact Form */
+  .contact-section h2 {
+    font-size: 1.6rem;
+    margin-bottom: 15px;
+    color: #222;
+  }
+  
+  .contact-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .contact-section input,
+  .contact-section textarea {
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.2s ease;
+  }
+  
+  .contact-section input:focus,
+  .contact-section textarea:focus {
+    border-color: var(--color-primary-darker);
+  }
+  
+  .contact-section button {
+    background: var(--primary);
+    color: var(--color-on-primary);
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .contact-section button:hover {
+    transform: translateY(-2px);
+  }
+  
+  .status-message {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: 500;
+  }
+  
+  .status-message.success {
+    color: green;
+  }
+  .status-message.error {
+    color: red;
+  }
+  

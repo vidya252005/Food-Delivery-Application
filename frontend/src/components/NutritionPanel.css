@@ -1,0 +1,45 @@
+.nutrition-panel {
+  margin: 0.5rem 0 0.75rem;
+}
+
+.nutrition-panel--compact {
+  margin: 0.35rem 0;
+}
+
+.nutrition-macros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.6rem;
+  font-size: 0.78rem;
+  color: #4b5563;
+  margin-bottom: 0.35rem;
+}
+
+.nutrition-macros span {
+  background: #f9fafb;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+.dietary-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.dietary-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-primary-dark, #1a6b3c);
+  background: var(--color-primary-light, #e8f5ee);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+.allergen-note {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  margin: 0.35rem 0 0;
+}

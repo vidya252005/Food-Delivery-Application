@@ -1,0 +1,43 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: food_delivery
+      POSTGRES_USER: food_delivery_app
+      POSTGRES_PASSWORD: devpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U food_delivery_app -d food_delivery"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "5001:5001"
+    environment:
+      NODE_ENV: production
+      PORT: 5001
+      PG_HOST: postgres
+      PG_PORT: 5432
+      PG_DATABASE: food_delivery
+      PG_USER: food_delivery_app
+      PG_PASSWORD: devpassword
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
+      CORS_ORIGINS: http://localhost:3000
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      FRONTEND_URL: http://localhost:3000
+    # Waits for Postgres to report *healthy* (accepting connections), not
+    # just "container started" - the difference matters because Postgres
+    # takes a moment after start to actually accept connections.
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:

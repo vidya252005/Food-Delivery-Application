@@ -1,0 +1,120 @@
+.restaurant-login-page {
+    min-height: 100vh;
+    background: var(--green-50);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  
+  .restaurant-login-container {
+    width: 100%;
+    max-width: 450px;
+  }
+  
+  .restaurant-login-card {
+    background: white;
+    border-radius: 20px;
+    padding: 50px 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+  
+  .restaurant-login-card h1 {
+    font-size: 2.2rem;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+  }
+  
+  .error-message {
+    background-color: var(--color-danger-light);
+    color: var(--color-primary-darker);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid var(--color-primary);
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+    outline: none;
+  }
+  
+  .form-group input:focus {
+    border-color: var(--color-primary-darker);
+  }
+  
+  .restaurant-login-btn {
+    width: 100%;
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+    padding: 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+  }
+  
+  .restaurant-login-btn:hover {
+    background-color: var(--color-primary-dark);
+  }
+  
+  .restaurant-login-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .signup-link,
+  .back-link {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--text-secondary);
+  }
+  
+  .signup-link a,
+  .back-link a {
+    color: var(--color-primary-darker);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  
+  .signup-link a:hover,
+  .back-link a:hover {
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 768px) {
+    .restaurant-login-card {
+      padding: 40px 30px;
+    }
+  
+    .restaurant-login-card h1 {
+      font-size: 1.8rem;
+    }
+  }

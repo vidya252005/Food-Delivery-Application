@@ -1,0 +1,131 @@
+.order-tracking-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: var(--white);
+}
+
+.tracking-loading {
+  text-align: center;
+  padding: 4rem;
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}
+
+.tracking-header {
+  margin-bottom: 1.5rem;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.back-btn:hover {
+  color: var(--primary-dark);
+}
+
+.tracking-header h1 {
+  margin: 0;
+  color: var(--primary-deep);
+  font-weight: 700;
+}
+
+.order-id {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.tracking-status-card {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-card);
+}
+
+.tracking-status-card h2 {
+  margin: 0 0 0.5rem;
+  text-transform: capitalize;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.eta {
+  color: var(--primary-dark);
+  margin-bottom: 1rem;
+}
+
+.status-timeline {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.25rem;
+  overflow-x: auto;
+  padding-top: 0.5rem;
+}
+
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 60px;
+  opacity: 0.4;
+}
+
+.timeline-step.done {
+  opacity: 1;
+}
+
+.timeline-step.done .step-dot {
+  background: var(--primary);
+}
+
+.timeline-step.active .step-dot {
+  box-shadow: 0 0 0 4px var(--green-200);
+}
+
+.step-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--border);
+  margin-bottom: 0.35rem;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.timeline-step span {
+  font-size: 0.65rem;
+  text-align: center;
+  text-transform: capitalize;
+  color: var(--text-secondary);
+}
+
+.timeline-step.active span {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.tracking-details {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--green-50);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+}
+
+.tracking-details h3 {
+  margin: 0 0 0.5rem;
+  color: var(--primary-deep);
+}
+
+.tracking-details p {
+  margin: 0.25rem 0;
+  color: var(--text-secondary);
+}

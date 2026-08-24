@@ -1,0 +1,225 @@
+/* Login + Signup page styles (scoped + backward compatible) */
+
+/* Page wrapper */
+.auth-page,
+.login-page,
+.signup-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  /* softer background as suggested */
+  background: var(--green-50);
+}
+
+/* Container */
+.auth-container,
+.login-container,
+.signup-container {
+  width: 100%;
+  max-width: 440px;
+}
+
+/* Card */
+.auth-card,
+.login-card,
+.signup-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.5s ease;
+}
+
+/* Headings */
+.auth-card h2,
+.login-card h1,
+.signup-card h1 {
+  margin-bottom: 6px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  text-align: center;
+}
+
+/* Subtitle */
+.auth-subtitle,
+.subtitle {
+  color: #667085;
+  margin-bottom: 18px;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+/* Error message (scoped to auth-card to avoid clashing with global .error-message) */
+.auth-card .error-message {
+  background: var(--color-accent-light);
+  color: var(--color-primary-darker);
+  padding: 16px;
+  border-radius: 10px;
+  border-left: 4px solid var(--color-primary);
+  font-weight: 500;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+/* Form */
+.auth-form .form-group,
+.form-group {
+  margin-bottom: 16px;
+}
+
+.auth-form label,
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #344054;
+}
+
+/* Inputs rely on global styles from App.css; we just ensure background */
+.auth-form input,
+.form-group input,
+.form-group textarea {
+  background: #fff;
+}
+
+/* Button */
+.auth-button,
+.login-btn,
+.signup-btn {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  background: var(--primary);
+  color: var(--color-on-primary);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-card);
+  margin-top: 10px;
+}
+
+.auth-button:hover:not(:disabled),
+.login-btn:hover:not(:disabled),
+.signup-btn:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.auth-button:active:not(:disabled),
+.login-btn:active:not(:disabled),
+.signup-btn:active:not(:disabled) {
+  background: var(--primary-active);
+}
+
+.auth-button:disabled,
+.login-btn:disabled,
+.signup-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Footer + links */
+.auth-footer,
+.signup-link,
+.login-link {
+  margin-top: 16px;
+  text-align: center;
+  color: #475467;
+}
+
+.auth-link,
+.signup-link a,
+.login-link a {
+  color: var(--color-primary-darker);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.auth-link:hover,
+.signup-link a:hover,
+.login-link a:hover {
+  border-bottom-color: var(--color-primary-darker);
+  text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .auth-card,
+  .login-card,
+  .signup-card {
+    padding: 22px;
+  }
+
+  .auth-card h2,
+  .login-card h1,
+  .signup-card h1 {
+    font-size: 1.8rem;
+  }
+}
+
+.oauth-unconfigured code {
+  font-size: 0.85em;
+  background: var(--green-50);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+.oauth-section {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.google-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.google-btn span {
+  background: var(--color-primary);
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.auth-divider {
+  text-align: center;
+  margin: 1rem 0;
+  color: var(--text-muted);
+  position: relative;
+}
+
+.auth-divider span {
+  background: #fff;
+  padding: 0 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-divider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: #e8e8e8;
+}

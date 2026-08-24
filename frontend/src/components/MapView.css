@@ -1,0 +1,10 @@
+.map-view {
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-float);
+}
+
+.map-view .leaflet-container {
+  font-family: inherit;
+}

@@ -1,0 +1,73 @@
+.preferences-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+.preferences-page h1 {
+  margin: 0 0 0.5rem;
+}
+
+.prefs-intro {
+  color: #6b7280;
+  margin-bottom: 2rem;
+}
+
+.preferences-page section {
+  margin-bottom: 1.75rem;
+}
+
+.preferences-page h2 {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.pref-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.pref-chip {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-transform: capitalize;
+}
+
+.pref-chip.active {
+  background: var(--color-primary-light, #e8f5ee);
+  border-color: var(--color-primary, #22a055);
+  color: var(--color-primary-dark, #1a6b3c);
+  font-weight: 600;
+}
+
+.pref-numbers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.pref-numbers label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.pref-numbers input {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-weight: 400;
+}
+
+.saved-msg {
+  color: var(--color-primary-dark, #1a6b3c);
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+}

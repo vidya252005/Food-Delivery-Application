@@ -1,0 +1,66 @@
+.coming-soon-page {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+}
+
+.coming-soon-card {
+  max-width: 480px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+}
+
+.coming-soon-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.coming-soon-card h1 {
+  font-size: 1.5rem;
+  margin: 0 0 0.75rem;
+  color: #111827;
+}
+
+.coming-soon-card p {
+  color: #6b7280;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.coming-soon-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+}
+
+.coming-soon-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.coming-soon-chip {
+  border: 1px solid var(--color-primary, #22a055);
+  background: var(--color-primary-light, #e8f5ee);
+  color: var(--color-primary-dark, #1a6b3c);
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.coming-soon-home {
+  display: inline-block;
+  text-decoration: none;
+  padding: 0.65rem 1.5rem;
+}

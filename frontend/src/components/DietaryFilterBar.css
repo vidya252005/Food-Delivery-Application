@@ -1,0 +1,79 @@
+.dietary-filter-bar {
+  background: #fff;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.filter-group {
+  margin-bottom: 0.75rem;
+}
+
+.filter-group:last-child {
+  margin-bottom: 0;
+}
+
+.filter-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.filter-chip {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.filter-chip:hover {
+  border-color: var(--color-primary, #22a055);
+}
+
+.filter-chip.active {
+  background: var(--color-primary-light, #e8f5ee);
+  border-color: var(--color-primary, #22a055);
+  color: var(--color-primary-dark, #1a6b3c);
+  font-weight: 600;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.filter-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.filter-select {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.filter-select select {
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+}
