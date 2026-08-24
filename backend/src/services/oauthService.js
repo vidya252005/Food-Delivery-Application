@@ -29,7 +29,14 @@ async function loginWithGoogle(credential) {
       audience: env.GOOGLE_CLIENT_ID,
     });
     payload = ticket.getPayload();
-  } catch {
+  } catch (err) {
+    const msg = err?.message || '';
+    if (msg.includes('audience') || msg.includes('Audience')) {
+      throw new AppError(
+        'Google Client ID mismatch — REACT_APP_GOOGLE_CLIENT_ID must match backend GOOGLE_CLIENT_ID',
+        401
+      );
+    }
     throw new AppError('Invalid or expired Google sign-in token', 401);
   }
 

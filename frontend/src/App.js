@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -39,7 +39,7 @@ function NavbarSwitcher() {
   const { role: userRole, isLoggedIn: userLoggedIn } = useAuth();
   const { isLoggedIn: restaurantLoggedIn } = useRestaurant();
 
-  if (path === '/' || path === '/login' || path === '/signup' ||
+  if (path === '/login' || path === '/signup' ||
       path === '/restaurant-login' || path === '/restaurant-signup' || path === '/admin') return null;
 
   if (restaurantLoggedIn) return <RestaurantNavbar />;
@@ -62,7 +62,8 @@ function AppRoutes() {
                 <div className="App">
                   <NavbarSwitcher />
                   <Routes>
-                    <Route path="/" element={<Landing />} />
+                    <Route path="/" element={<Navigate to="/restaurants" replace />} />
+                    <Route path="/home" element={<Landing />} />
                     <Route path="/restaurants" element={<Restaurants />} />
                     <Route path="/restaurant/:id" element={<RestaurantDetail />} />
                     <Route path="/cart" element={<Cart />} />

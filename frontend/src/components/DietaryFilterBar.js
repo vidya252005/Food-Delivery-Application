@@ -22,7 +22,6 @@ export default function DietaryFilterBar({ filters, onChange }) {
   return (
     <div className="dietary-filter-bar">
       <div className="filter-group">
-        <span className="filter-label">Dietary</span>
         <div className="filter-chips">
           {DIETARY_OPTIONS.map((opt) => (
             <button

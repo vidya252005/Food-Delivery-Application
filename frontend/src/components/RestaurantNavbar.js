@@ -1,11 +1,14 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useRestaurant } from '../context/RestaurantContext';
 import './Navbar.css';
 
 const RestaurantNavbar = () => {
   const { restaurant, logout } = useRestaurant();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const navClass = (path) => `nav-link${pathname.startsWith(path) ? ' active' : ''}`;
 
   const handleLogout = () => {
     logout();
@@ -13,62 +16,31 @@ const RestaurantNavbar = () => {
   };
 
   return (
-    <nav className="navbar restaurant-navbar">
+    <header className="navbar restaurant-navbar">
       <div className="nav-container">
-        <Link to="/restaurant/dashboard" className="nav-logo restaurant-logo">
-          🍳 FoodClub Partner Portal
-        </Link>
-        
-        <ul className="nav-menu">
-          <li className="nav-item">
-            <Link to="/restaurant/dashboard" className="nav-link">
-              <span className="nav-icon">📊</span>
-              Dashboard
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/restaurant/menu" className="nav-link">
-              <span className="nav-icon">📋</span>
-              Menu
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/restaurant/orders" className="nav-link">
-              <span className="nav-icon">📦</span>
-              Orders
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/restaurant/verification" className="nav-link">
-              <span className="nav-icon">✓</span>
-              Verification
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/restaurant/profile" className="nav-link">
-              <span className="nav-icon">⚙️</span>
-              Profile
-            </Link>
-          </li>
+        <div className="nav-brand">
+          <Link to="/restaurant/dashboard" className="nav-logo restaurant-logo">
+            FoodClub Partner
+          </Link>
+        </div>
+
+        <nav className="nav-menu" aria-label="Restaurant">
+          <Link to="/restaurant/dashboard" className={navClass('/restaurant/dashboard')}>Dashboard</Link>
+          <Link to="/restaurant/menu" className={navClass('/restaurant/menu')}>Menu</Link>
+          <Link to="/restaurant/orders" className={navClass('/restaurant/orders')}>Orders</Link>
+          <Link to="/restaurant/verification" className={navClass('/restaurant/verification')}>Verification</Link>
+          <Link to="/restaurant/profile" className={navClass('/restaurant/profile')}>Profile</Link>
           {restaurant && (
             <>
-              <li className="nav-item">
-                <span className="nav-link restaurant-name">
-                  <span className="nav-icon">🏪</span>
-                  {restaurant.name}
-                </span>
-              </li>
-              <li className="nav-item">
-                <button className="nav-btn logout-btn" onClick={handleLogout}>
-                  <span className="nav-icon">🚪</span>
-                  Logout
-                </button>
-              </li>
+              <span className="restaurant-name">{restaurant.name}</span>
+              <button type="button" className="nav-btn logout-btn" onClick={handleLogout}>
+                Logout
+              </button>
             </>
           )}
-        </ul>
+        </nav>
       </div>
-    </nav>
+    </header>
   );
 };
 

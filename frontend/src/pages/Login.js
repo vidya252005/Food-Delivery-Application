@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../utils/api';
-import { isGoogleOAuthConfigured } from '../config/google';
+import { isGoogleOAuthConfigured, GOOGLE_OAUTH_ORIGIN_HINT } from '../config/google';
+import { getPostAuthPath } from '../utils/authRedirect';
 import './Login.css';
 
 function Login() {
@@ -14,7 +15,12 @@ function Login() {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = getPostAuthPath(location);
   const googleEnabled = isGoogleOAuthConfigured();
+  const fromCart = redirectTo === '/cart';
+
+  const goAfterAuth = () => navigate(redirectTo, { replace: true });
 
   const handleGoogleSuccess = async (credentialResponse) => {
     setError('');
@@ -28,9 +34,12 @@ function Login() {
     try {
       const response = await authAPI.googleLogin(credentialResponse.credential);
       login(response.data.user, response.token);
-      navigate('/restaurants');
+      goAfterAuth();
     } catch (err) {
-      setError(err.message || 'Google login failed');
+      const msg = err.message || 'Google login failed';
+      setError(msg.includes('Client ID') || msg.includes('503')
+        ? `${msg}. ${GOOGLE_OAUTH_ORIGIN_HINT}`
+        : msg);
     } finally {
       setLoading(false);
     }
@@ -43,7 +52,7 @@ function Login() {
     try {
       const response = await authAPI.userLogin({ email, password });
       login(response.data.user, response.token);
-      navigate('/restaurants');
+      goAfterAuth();
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
@@ -56,7 +65,11 @@ function Login() {
       <div className="auth-container">
         <div className="auth-card">
           <h2>Login to FoodClub</h2>
-          <p className="auth-subtitle">Bengaluru&apos;s curated marketplace for pure, healthy food</p>
+          <p className="auth-subtitle">
+            {fromCart
+              ? 'Sign in to complete your order — your cart is saved.'
+              : 'Bengaluru\'s curated marketplace for pure, healthy food'}
+          </p>
 
           {error && (
             <div className="error-message"><span>⚠️ {error}</span></div>
@@ -74,9 +87,10 @@ function Login() {
               />
             ) : (
               <div className="info-message oauth-unconfigured">
-                Google Sign-In is not configured. Add <code>REACT_APP_GOOGLE_CLIENT_ID</code> to{' '}
-                <code>frontend/.env</code> and matching <code>GOOGLE_CLIENT_ID</code> to{' '}
-                <code>backend/.env</code>, then restart the app.
+                Google Sign-In is not configured. Copy <code>frontend/.env.example</code> to{' '}
+                <code>frontend/.env</code>, set <code>REACT_APP_GOOGLE_CLIENT_ID</code>, set the
+                same value as <code>GOOGLE_CLIENT_ID</code> in <code>backend/.env</code>, then
+                restart both servers.
               </div>
             )}
           </div>
@@ -100,7 +114,15 @@ function Login() {
           </form>
 
           <div className="auth-footer">
-            <p>Don't have an account? <Link to="/signup" className="auth-link">Sign Up</Link></p>
+            <p>Don't have an account?{' '}
+              <Link
+                to={{ pathname: '/signup', search: location.search }}
+                state={location.state}
+                className="auth-link"
+              >
+                Sign Up
+              </Link>
+            </p>
             <p>Restaurant owner? <Link to="/restaurant-login" className="auth-link">Restaurant Login</Link></p>
           </div>
         </div>

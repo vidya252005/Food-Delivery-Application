@@ -1,7 +1,10 @@
 node_modules/
 .env
-.DS_Store
-build/
+.env.local
+.env.*.local
+backend/.env
+frontend/.env
+.DS_Storebuild/
 dist/
 coverage/
 .vscode/

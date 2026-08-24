@@ -6,6 +6,7 @@ import { useLocation as useGeoLocation } from '../context/LocationContext';
 import { orderAPI, foodclubAPI } from '../utils/api';
 import { formatPrice } from '../utils/format';
 import { calculateCartPricing } from '../utils/pricing';
+import { loginPathWithRedirect } from '../utils/authRedirect';
 import ComingSoon from '../components/ComingSoon';
 import './Payment.css';
 
@@ -40,7 +41,7 @@ function Payment() {
   useEffect(() => {
     if (!isSupported) return;
     if (!isLoggedIn) {
-      navigate('/login');
+      navigate(loginPathWithRedirect('/cart'));
       return;
     }
     if (cartItems.length === 0) {

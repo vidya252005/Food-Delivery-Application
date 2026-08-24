@@ -29,7 +29,7 @@ services:
       PG_USER: food_delivery_app
       PG_PASSWORD: devpassword
       JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
-      CORS_ORIGINS: http://localhost:3000
+      CORS_ORIGINS: http://localhost:3000,http://localhost:3001
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       FRONTEND_URL: http://localhost:3000
     # Waits for Postgres to report *healthy* (accepting connections), not

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../utils/api';
+import { getPostAuthPath } from '../utils/authRedirect';
 import './Signup.css';
 
 function Signup() {
@@ -17,6 +18,9 @@ function Signup() {
   
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = getPostAuthPath(location);
+  const fromCart = redirectTo === '/cart';
 
   const handleChange = (e) => {
     setFormData({
@@ -57,9 +61,7 @@ function Signup() {
       
       // Automatically login after registration
       login(response.data.user, response.token);
-      
-      alert('Registration successful! Welcome to FoodClub!');
-      navigate('/restaurants');
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       console.error('Registration error:', err);
       setError(err.message || 'Registration failed. Please try again.');
@@ -73,7 +75,11 @@ function Signup() {
       <div className="auth-container">
         <div className="auth-card">
           <h2>Create Account</h2>
-          <p className="auth-subtitle">Sign up to start ordering delicious food!</p>
+          <p className="auth-subtitle">
+            {fromCart
+              ? 'Create an account to complete your order — your cart is saved.'
+              : 'Sign up to start ordering delicious food!'}
+          </p>
           
           {error && (
             <div className="error-message">
@@ -164,7 +170,13 @@ function Signup() {
           <div className="auth-footer">
             <p>
               Already have an account?{' '}
-              <Link to="/login" className="auth-link">Login</Link>
+              <Link
+                to={{ pathname: '/login', search: location.search }}
+                state={location.state}
+                className="auth-link"
+              >
+                Login
+              </Link>
             </p>
             <p>
               Want to register your restaurant?{' '}

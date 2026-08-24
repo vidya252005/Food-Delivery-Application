@@ -9,7 +9,7 @@ import './Navbar.css';
 const UserNavbar = () => {
   const { user, isLoggedIn, logout } = useAuth();
   const { getCartCount } = useCart();
-  const { location, detectLocation } = useGeoLocation();
+  const { location, detectLocation, loading: locating } = useGeoLocation();
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -19,39 +19,51 @@ const UserNavbar = () => {
   };
 
   return (
-    <nav className="navbar user-navbar app-nav">
+    <header className="navbar user-navbar">
       <div className="nav-container">
-        <Link to="/" className="nav-logo">FoodClub</Link>
-        <button type="button" className="location-chip" onClick={detectLocation}>
-          📍 {location?.label || 'Bengaluru'}
-        </button>
-        <ul className="nav-menu">
-          <li className="nav-item"><Link to="/restaurants" className={navClass('/restaurants')}>Discover</Link></li>
-          <li className="nav-item"><Link to="/select" className={navClass('/select', 'nav-link-select')}>Select</Link></li>
-          {isLoggedIn && <li className="nav-item"><Link to="/preferences" className={navClass('/preferences')}>Preferences</Link></li>}
-          {isLoggedIn && <li className="nav-item"><Link to="/orders" className={navClass('/orders')}>Orders</Link></li>}
-          <li className="nav-item">
-            <Link to="/cart" className={`${navClass('/cart')} cart-link`}>
-              Cart {getCartCount() > 0 && <span className="cart-badge">{getCartCount()}</span>}
-            </Link>
-          </li>
-          <li className="nav-item"><NotificationBell /></li>
+        <div className="nav-brand">
+          <Link to="/restaurants" className="nav-logo">FoodClub</Link>
+          <button
+            type="button"
+            className="location-chip"
+            onClick={detectLocation}
+            disabled={locating}
+            title={location?.label || 'Bengaluru'}
+          >
+            📍 {locating ? 'Locating…' : (location?.label || 'Bengaluru')}
+          </button>
+        </div>
+
+        <nav className="nav-menu" aria-label="Main">
+          <Link to="/restaurants" className={navClass('/restaurants')}>Discover</Link>
+          <Link to="/select" className={navClass('/select', 'nav-link-select')}>Select</Link>
+          {isLoggedIn && <Link to="/preferences" className={navClass('/preferences')}>Preferences</Link>}
+          {isLoggedIn && <Link to="/orders" className={navClass('/orders')}>Orders</Link>}
+          <Link to="/cart" className={`${navClass('/cart')} cart-link`}>
+            Cart
+            {getCartCount() > 0 && <span className="cart-badge">{getCartCount()}</span>}
+          </Link>
+          <NotificationBell />
           {isLoggedIn ? (
             <>
-              <li className="nav-item"><span className="nav-link">Hi, {user?.name?.split(' ')[0]}</span></li>
-              <li className="nav-item">
-                <button type="button" className="nav-btn logout-btn" onClick={() => { logout(); navigate('/'); }}>Logout</button>
-              </li>
+              <span className="nav-greeting">Hi, {user?.name?.split(' ')[0]}</span>
+              <button
+                type="button"
+                className="nav-btn logout-btn"
+                onClick={() => { logout(); navigate('/'); }}
+              >
+                Logout
+              </button>
             </>
           ) : (
             <>
-              <li className="nav-item"><Link to="/login" className="nav-link">Login</Link></li>
-              <li className="nav-item"><Link to="/signup" className="signup-btn">Sign up</Link></li>
+              <Link to="/login" className="nav-link">Login</Link>
+              <Link to="/signup" className="signup-btn">Sign up</Link>
             </>
           )}
-        </ul>
+        </nav>
       </div>
-    </nav>
+    </header>
   );
 };
 

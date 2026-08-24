@@ -4,6 +4,7 @@ import {
   normalizeLocation,
   isSupportedLocation,
 } from '../config/cities';
+import { resolveLocationLabel, nearestBengaluruArea, enrichLocation, buildLocationLabelSync } from '../utils/geocode';
 
 const LocationContext = createContext(null);
 
@@ -12,7 +13,7 @@ export function LocationProvider({ children }) {
     const saved = localStorage.getItem('userLocation');
     if (saved) {
       try {
-        return normalizeLocation(JSON.parse(saved));
+        return normalizeLocation(enrichLocation(JSON.parse(saved)));
       } catch { /* fall through */ }
     }
     return normalizeLocation(BENGALURU_CENTER);
@@ -21,7 +22,7 @@ export function LocationProvider({ children }) {
   const [error, setError] = useState('');
 
   const saveLocation = useCallback((loc) => {
-    const normalized = normalizeLocation(loc);
+    const normalized = normalizeLocation(enrichLocation(loc));
     setLocation(normalized);
     localStorage.setItem('userLocation', JSON.stringify(normalized));
     if (!normalized.supported) {
@@ -39,18 +40,29 @@ export function LocationProvider({ children }) {
     setLoading(true);
     setError('');
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const detected = {
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-          label: 'Your location',
+      async (pos) => {
+        const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+        const area = nearestBengaluruArea(lat, lng);
+        const immediateLabel = buildLocationLabelSync(lat, lng);
+
+        saveLocation({
+          lat,
+          lng,
+          label: immediateLabel,
+          area: area?.label,
           city: 'Bengaluru',
-        };
-        const normalized = normalizeLocation(detected);
-        saveLocation(normalized);
-        if (!normalized.supported) {
-          setError('FoodClub is not in your area yet — coming to your city soon!');
-        }
+          accuracyM: accuracy,
+        });
+
+        const label = await resolveLocationLabel(lat, lng);
+        saveLocation({
+          lat,
+          lng,
+          label,
+          area: area?.label,
+          city: 'Bengaluru',
+          accuracyM: accuracy,
+        });
         setLoading(false);
       },
       () => {
@@ -65,6 +77,20 @@ export function LocationProvider({ children }) {
   useEffect(() => {
     if (!localStorage.getItem('userLocation')) {
       saveLocation(BENGALURU_CENTER);
+    }
+  }, [saveLocation]);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('userLocation');
+      if (!saved) return;
+      const parsed = JSON.parse(saved);
+      const needsLabel = parsed?.lat && (!parsed.label || parsed.label === 'Your location');
+      if (needsLabel) {
+        saveLocation(enrichLocation(parsed));
+      }
+    } catch {
+      /* ignore corrupt saved location */
     }
   }, [saveLocation]);
 

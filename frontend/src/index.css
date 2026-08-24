@@ -1,4 +1,8 @@
 :root {
+  /* Base */
+  --white: #FFFFFF;
+  --black: #000000;
+
   /* Brand */
   --brand-primary: #176B45;
   --brand-dark: #0F4F34;
@@ -42,8 +46,9 @@
   /* Natural accent */
   --olive: #687653;
 
-  /* Base */
-  --white: #FFFFFF;
+  /* Typography */
+  --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   /* Legacy aliases — map existing CSS to premium tokens */
   --primary: var(--brand-primary);
@@ -111,6 +116,8 @@
 
   /* Focus — subtle sage ring, not blue */
   --focus-ring: 0 0 0 3px var(--sage-100);
+
+  --nav-height: 64px;
 }
 
 * {
@@ -120,11 +127,18 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-sans);
   background-color: var(--white);
   color: var(--ink);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+}
+
+.font-serif,
+.discover-title,
+.select-title,
+.nav-logo {
+  font-family: var(--font-serif);
 }
 
 /* Typography hierarchy */

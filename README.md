@@ -45,8 +45,34 @@ npm run dev           # http://localhost:5001
 cd frontend
 cp .env.example .env
 npm install
-npm start             # http://localhost:3000
+npm start             # http://localhost:3000 (or 3001 if 3000 is busy)
 ```
+
+### Environment variables
+
+Both frontend and backend use their own `.env` file (never committed — see `.gitignore`).
+
+| File | Purpose |
+|---|---|
+| `backend/.env` | Secrets and server config: Postgres, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, CORS |
+| `frontend/.env` | **Public** build-time config for Create React App (`REACT_APP_*` only) |
+| `.env` (root) | Optional — used by Docker Compose for `JWT_SECRET` and `GOOGLE_CLIENT_ID` |
+
+**Why does the frontend need `.env`?**  
+Create React App embeds `REACT_APP_*` values into the JavaScript bundle at build time. The Google Sign-In button needs your **public Client ID** in the browser. That ID is not secret (Google expects it to be visible). Do **not** put the Client Secret in `frontend/.env` — this app uses Google's ID-token flow; the backend only needs the same Client ID to verify tokens.
+
+**Google Sign-In setup**
+
+1. Create an OAuth 2.0 **Web application** Client ID in [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
+2. **Authorized JavaScript origins** — add both (CRA may use 3001 if 3000 is taken):
+   - `http://localhost:3000`
+   - `http://localhost:3001`
+3. Set the **same Client ID** in both places:
+   - `frontend/.env` → `REACT_APP_GOOGLE_CLIENT_ID=...`
+   - `backend/.env` → `GOOGLE_CLIENT_ID=...`
+4. Restart **both** `npm run dev` (backend) and `npm start` (frontend).
+
+Email/password login works without Google — use demo accounts below.
 
 **Demo logins** (password for all: `password123`)
 

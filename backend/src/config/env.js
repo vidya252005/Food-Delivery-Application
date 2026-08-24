@@ -35,4 +35,10 @@ if (env.NODE_ENV === 'production' && env.JWT_SECRET === 'dev-secret-change-me') 
   throw new Error('JWT_SECRET must be set in production');
 }
 
+if (env.NODE_ENV !== 'test') {
+  if (!env.GOOGLE_CLIENT_ID) {
+    console.warn('[env] GOOGLE_CLIENT_ID is not set — Google Sign-In will return 503');
+  }
+}
+
 module.exports = env;

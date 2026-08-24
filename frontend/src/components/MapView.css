@@ -9,6 +9,11 @@
   font-family: inherit;
 }
 
+.map-popup-coords {
+  font-size: 0.75rem;
+  color: var(--subtle);
+}
+
 /* Marker styling when rendered via divIcon */
 .map-marker {
   background: var(--brand-primary);

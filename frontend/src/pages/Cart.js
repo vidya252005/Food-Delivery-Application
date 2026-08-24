@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useLocation } from '../context/LocationContext';
@@ -7,6 +7,7 @@ import { foodclubAPI } from '../utils/api';
 import { resolveMenuItemImage } from '../utils/foodImages';
 import { formatPrice } from '../utils/format';
 import { calculateCartPricing } from '../utils/pricing';
+import { loginPathWithRedirect } from '../utils/authRedirect';
 import FoodImage from '../components/FoodImage';
 import ComingSoon from '../components/ComingSoon';
 import './Cart.css';
@@ -41,13 +42,12 @@ function Cart() {
 
   const handleCheckout = () => {
     if (!isSupported) return;
-    if (!isLoggedIn) {
-      alert('Please login to place an order');
-      navigate('/login');
-      return;
-    }
     if (cartItems.length === 0) {
       alert('Your cart is empty!');
+      return;
+    }
+    if (!isLoggedIn) {
+      navigate(loginPathWithRedirect('/cart'));
       return;
     }
     navigate('/payment');
@@ -82,6 +82,31 @@ function Cart() {
       <div className="cart-container">
         <div className="cart-main">
           <h1>🛍️ Your Cart</h1>
+
+          {!isLoggedIn && (
+            <div className="cart-guest-banner">
+              <div className="cart-guest-banner__text">
+                <strong>Almost there!</strong>
+                <span>Sign in or create an account to place your order. Your cart is saved on this device.</span>
+              </div>
+              <div className="cart-guest-banner__actions">
+                <button
+                  type="button"
+                  className="cart-guest-btn cart-guest-btn--primary"
+                  onClick={() => navigate(loginPathWithRedirect('/cart'))}
+                >
+                  Sign in
+                </button>
+                <Link
+                  to={{ pathname: '/signup', search: '?redirect=%2Fcart' }}
+                  state={{ from: { pathname: '/cart' } }}
+                  className="cart-guest-btn cart-guest-btn--outline"
+                >
+                  Sign up
+                </Link>
+              </div>
+            </div>
+          )}
 
           {restaurant && (
             <div className="cart-restaurant-info">
@@ -182,7 +207,7 @@ function Cart() {
             </div>
 
             <button type="button" className="checkout-btn" onClick={handleCheckout}>
-              Proceed to Payment 💳
+              {isLoggedIn ? 'Proceed to Payment 💳' : 'Sign in to checkout'}
             </button>
 
             <button type="button" className="continue-shopping-btn" onClick={() => navigate('/restaurants')}>
@@ -190,7 +215,7 @@ function Cart() {
             </button>
           </div>
 
-          {isLoggedIn && user && (
+          {isLoggedIn && user ? (
             <div className="delivery-info">
               <h4>Delivery Address</h4>
               {user.address?.street ? (
@@ -202,6 +227,10 @@ function Cart() {
               ) : (
                 <p className="no-address">Add your Bengaluru address at checkout.</p>
               )}
+            </div>
+          ) : (
+            <div className="cart-guest-note">
+              <p>Guest browsing — no account needed to explore. Sign in when you&apos;re ready to checkout.</p>
             </div>
           )}
         </div>

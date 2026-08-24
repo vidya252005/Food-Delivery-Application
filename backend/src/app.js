@@ -14,6 +14,7 @@ const feedbackRoutes = require('./routes/feedback.routes');
 const supportRoutes = require('./routes/support.routes');
 const foodclubRoutes = require('./routes/foodclub.routes');
 const adminRoutes = require('./routes/admin.routes');
+const geoRoutes = require('./routes/geo.routes');
 
 const app = express();
 
@@ -72,6 +73,7 @@ app.use('/api/feedback', apiRateLimit, feedbackRoutes);
 app.use('/api/support', apiRateLimit, supportRoutes);
 app.use('/api/v1', apiRateLimit, foodclubRoutes);
 app.use('/api/v1/admin', apiRateLimit, adminRoutes);
+app.use('/api/geo', apiRateLimit, geoRoutes);
 
 app.get('/', (req, res) => {
   res.json({
