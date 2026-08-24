@@ -12,7 +12,7 @@ L.Icon.Default.mergeOptions({
 });
 
 const userIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
@@ -112,7 +112,7 @@ export default function MapView({
         ))}
 
         {routePoints.length >= 2 && (
-          <Polyline positions={routePoints} color="#0F9F4F" weight={4} opacity={0.7} dashArray="8 8" />
+          <Polyline positions={routePoints} color="#176B45" weight={4} opacity={0.7} dashArray="8 8" />
         )}
       </MapContainer>
     </div>

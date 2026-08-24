@@ -1,5 +1,5 @@
 .map-view {
-  border-radius: var(--radius-xl);
+  border-radius: 18px;
   overflow: hidden;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-float);
@@ -7,4 +7,16 @@
 
 .map-view .leaflet-container {
   font-family: inherit;
+}
+
+/* Marker styling when rendered via divIcon */
+.map-marker {
+  background: var(--brand-primary);
+  border: 2px solid var(--white);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(24, 34, 29, 0.15);
+}
+
+.map-marker--selected {
+  background: var(--brand-dark);
 }

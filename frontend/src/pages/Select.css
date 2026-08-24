@@ -1,12 +1,15 @@
 .select-page {
   max-width: 960px;
   margin: 0 auto;
-  padding: 2rem 1.25rem 3rem;
+  padding: 0 1.25rem 3rem;
 }
 
 .select-hero {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin: 0 -1.25rem 2.5rem;
+  padding: 3rem 1.25rem 2.5rem;
+  background: var(--ivory);
+  border-bottom: 1px solid var(--border-warm);
 }
 
 .select-eyebrow {
@@ -14,18 +17,18 @@
   letter-spacing: 0.08em;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #92400e;
+  color: var(--gold-muted);
   margin: 0 0 0.5rem;
 }
 
 .select-hero h1 {
   font-size: 2.25rem;
   margin: 0 0 0.75rem;
-  color: var(--text-heading, #111827);
+  color: var(--brand-dark);
 }
 
 .select-subtitle {
-  color: #6b7280;
+  color: var(--muted);
   max-width: 520px;
   margin: 0 auto 1.5rem;
   line-height: 1.5;
@@ -34,6 +37,17 @@
 .select-cta {
   font-size: 1rem;
   padding: 0.85rem 2rem;
+  background: var(--brand-primary);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.select-cta:hover {
+  background: var(--brand-dark);
 }
 
 .select-status {
@@ -45,7 +59,11 @@
 
 .select-status.active span {
   font-weight: 700;
-  color: var(--color-primary-dark, #1a6b3c);
+  color: var(--gold-dark);
+}
+
+.select-benefits {
+  margin-bottom: 2.5rem;
 }
 
 .select-benefits ul {
@@ -56,19 +74,59 @@
 }
 
 .select-benefits li {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
+  background: var(--white);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-md);
   padding: 1rem 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
+.select-benefits li:nth-child(even) {
+  background: var(--ivory);
+}
+
+.select-benefits li strong {
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.select-benefits li span,
+.select-benefits li p {
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+.select-benefits li strong::before {
+  content: '✦ ';
+  color: var(--gold);
+  font-weight: 400;
+}
+
 .select-benefits h2,
 .select-restaurants h2 {
   font-size: 1.25rem;
   margin-bottom: 0.5rem;
+  color: var(--ink);
+}
+
+.select-price {
+  text-align: center;
+  margin: 1.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.select-price-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  margin-bottom: 0.25rem;
 }
 
 .select-grid {
@@ -81,15 +139,16 @@
 .select-card {
   text-decoration: none;
   color: inherit;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  transition: box-shadow 0.15s;
+  transition: box-shadow 0.15s ease;
+  box-shadow: var(--shadow-card);
 }
 
 .select-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-float);
 }
 
 .select-card-img {
@@ -105,17 +164,19 @@
 .select-card-body h3 {
   margin: 0 0 0.35rem;
   font-size: 1rem;
+  color: var(--ink);
 }
 
 .select-distance {
   font-size: 0.78rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .error-banner {
-  background: #fef2f2;
-  color: #b91c1c;
+  background: var(--color-danger-light);
+  color: var(--error);
   padding: 0.75rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   margin-bottom: 1rem;
+  border: 1px solid #E8C4C3;
 }

@@ -2,13 +2,13 @@ import React from 'react';
 import './QualityBadges.css';
 
 const BADGE_LABELS = {
-  verified_restaurant: { label: 'Verified', icon: '✓' },
-  nutrition_info_available: { label: 'Nutrition Info', icon: '📊' },
-  vegetarian_friendly: { label: 'Veg Friendly', icon: '🥬' },
-  high_protein_options: { label: 'High Protein', icon: '💪' },
-  organic_options: { label: 'Organic', icon: '🌿' },
-  chef_curated: { label: 'Chef Curated', icon: '👨‍🍳' },
-  select_eligible: { label: 'Select', icon: '✦' },
+  verified_restaurant: { label: 'Verified', icon: '✓', className: 'verified' },
+  nutrition_info_available: { label: 'Nutrition Info', icon: '📊', className: 'nutrition' },
+  vegetarian_friendly: { label: 'Veg Friendly', icon: '🥬', className: 'vegetarian' },
+  high_protein_options: { label: 'High Protein', icon: '💪', className: 'protein' },
+  organic_options: { label: 'Organic', icon: '🌿', className: 'organic' },
+  chef_curated: { label: "Chef's Choice", icon: '👨‍🍳', className: 'nutrition' },
+  select_eligible: { label: 'Select', icon: '✦', className: 'select' },
 };
 
 const DIETARY_LABELS = {
@@ -30,13 +30,17 @@ export default function QualityBadges({ restaurant, compact = false }) {
   const profile = restaurant?.qualityProfile;
   const badges = profile?.badges || [];
   const score = profile?.overallScore ?? restaurant?.qualityScore;
+  const exceptional = score != null && score >= 90;
 
   if (!score && badges.length === 0 && !restaurant?.selectEligible) return null;
 
   return (
     <div className={`quality-badges ${compact ? 'quality-badges--compact' : ''}`}>
       {score != null && (
-        <span className="quality-score" title="FoodClub Quality Score">
+        <span
+          className={`quality-score${exceptional ? ' quality-score--exceptional' : ''}`}
+          title="FoodClub Quality Score"
+        >
           {compact ? `${score}` : `Quality ${score}/100`}
         </span>
       )}
@@ -47,7 +51,7 @@ export default function QualityBadges({ restaurant, compact = false }) {
         const meta = BADGE_LABELS[b];
         if (!meta) return null;
         return (
-          <span key={b} className={`quality-badge ${b === 'select_eligible' ? 'select' : ''}`}>
+          <span key={b} className={`quality-badge ${meta.className}`}>
             {meta.icon} {meta.label}
           </span>
         );
@@ -61,6 +65,7 @@ export default function QualityBadges({ restaurant, compact = false }) {
 
 export function QualityScoreBreakdown({ profile }) {
   if (!profile) return null;
+  const exceptional = profile.overallScore >= 90;
   const rows = [
     ['Ingredients', profile.ingredientScore],
     ['Transparency', profile.transparencyScore],
@@ -70,7 +75,9 @@ export function QualityScoreBreakdown({ profile }) {
   return (
     <div className="quality-breakdown">
       <h4>FoodClub Quality Profile</h4>
-      <div className="quality-overall">{profile.overallScore}<span>/100</span></div>
+      <div className={`quality-overall${exceptional ? ' quality-overall--exceptional' : ''}`}>
+        {profile.overallScore}<span>/100</span>
+      </div>
       <ul>
         {rows.map(([label, value]) => (
           <li key={label}>

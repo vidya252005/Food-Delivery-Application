@@ -13,21 +13,21 @@
 .restaurants-header h1 {
   font-size: 2.8rem;
   font-weight: 700;
-  color: var(--primary-deep);
+  color: var(--brand-dark);
 }
 
 .restaurants-header p {
-  color: var(--text-secondary);
+  color: var(--muted);
   margin-top: 5px;
   font-size: 1.1rem;
 }
 
 .location-detect {
-  background: var(--green-50);
-  border: 1px solid var(--green-border);
-  color: var(--primary-dark);
+  background: var(--sage-50);
+  border: 1px solid var(--sage-300);
+  color: var(--brand-primary);
   padding: 0.5rem 1rem;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   cursor: pointer;
   margin: 0.75rem 0;
   font-size: 0.9rem;
@@ -36,13 +36,13 @@
 }
 
 .location-detect:hover {
-  background: var(--green-200);
+  background: var(--sage-100);
 }
 
 .restaurants-map-section {
   max-width: 1100px;
   margin: 0 auto 2rem;
-  border-radius: var(--radius-xl);
+  border-radius: 18px;
   overflow: hidden;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-float);
@@ -57,14 +57,14 @@
   max-width: 600px;
   background: var(--white);
   border-radius: var(--radius-pill);
-  border: 1px solid var(--green-border-soft);
+  border: 1px solid var(--border);
   box-shadow: var(--shadow-card);
   padding: 8px 15px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .search-form:focus-within {
-  border-color: var(--primary);
+  border-color: var(--brand-primary);
   box-shadow: var(--focus-ring);
 }
 
@@ -76,14 +76,19 @@
   outline: none;
   font-size: 1rem;
   background: transparent;
+  color: var(--ink);
+}
+
+.search-input::placeholder {
+  color: var(--subtle);
 }
 
 .search-button {
-  background: var(--primary);
+  background: var(--brand-primary);
   color: var(--white);
   border: none;
   padding: 10px 22px;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-md);
   cursor: pointer;
   font-weight: 600;
   font-size: 0.95rem;
@@ -91,19 +96,19 @@
 }
 
 .search-button:hover {
-  background: var(--primary-hover);
+  background: var(--brand-dark);
 }
 
 .clear-button {
   background: transparent;
   border: none;
-  color: var(--text-secondary);
+  color: var(--muted);
   font-weight: 500;
   cursor: pointer;
 }
 
 .clear-button:hover {
-  color: var(--primary-dark);
+  color: var(--ink);
 }
 
 .restaurants-grid {
@@ -134,7 +139,7 @@
 
 .restaurant-image {
   height: 210px;
-  background: var(--green-50);
+  background: var(--sage-50);
   overflow: hidden;
 }
 
@@ -164,7 +169,7 @@
 .restaurant-info h3 {
   font-size: 1.3rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--ink);
 }
 
 .rating-badge {
@@ -177,14 +182,14 @@
 }
 
 .cuisine {
-  color: var(--text-secondary);
+  color: #617067;
   margin: 6px 0 10px;
   font-size: 0.95rem;
 }
 
 .restaurant-desc {
   font-size: 0.82rem;
-  color: #6b7280;
+  color: var(--muted);
   margin: 0.25rem 0 0.35rem;
   line-height: 1.35;
 }
@@ -192,14 +197,14 @@
 .restaurant-meta {
   display: flex;
   justify-content: space-between;
-  color: var(--text-secondary);
+  color: var(--muted);
   font-size: 0.9rem;
   margin-top: 8px;
 }
 
 .no-restaurants {
   text-align: center;
-  color: var(--text-secondary);
+  color: var(--muted);
   margin-top: 60px;
 }
 

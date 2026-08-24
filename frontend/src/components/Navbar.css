@@ -1,6 +1,6 @@
 .navbar {
   background: var(--white);
-  box-shadow: var(--shadow-card);
+  box-shadow: none;
   border-bottom: 1px solid var(--border-light);
   position: sticky;
   top: 0;
@@ -24,7 +24,7 @@
 }
 
 .nav-logo {
-  color: var(--primary-dark);
+  color: var(--brand-dark);
   font-size: 1.35rem;
   font-weight: 700;
   text-decoration: none;
@@ -35,20 +35,20 @@
 }
 
 .location-chip {
-  background: var(--green-50);
-  border: 1px solid var(--green-border);
-  border-radius: var(--radius-sm);
+  background: var(--sage-50);
+  border: 1px solid var(--sage-300);
+  border-radius: var(--radius-md);
   padding: 0.4rem 0.75rem;
   font-size: 0.85rem;
   cursor: pointer;
-  color: var(--primary-dark);
+  color: var(--brand-primary);
   font-weight: 500;
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .location-chip:hover {
-  background: var(--green-200);
-  border-color: var(--primary);
+  background: var(--sage-100);
+  border-color: var(--sage-300);
 }
 
 .location-chip:focus-visible {
@@ -65,26 +65,41 @@
 }
 
 .nav-link {
-  color: var(--text-primary);
+  color: var(--ink);
   text-decoration: none;
   padding: 8px 16px;
   border-radius: var(--radius-sm);
   font-size: 0.95rem;
   font-weight: 600;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
   display: flex;
   align-items: center;
   gap: 6px;
+  border-bottom: 2px solid transparent;
 }
 
 .nav-link:hover {
-  background: var(--green-50);
-  color: var(--primary-dark);
+  color: var(--brand-primary);
+  background: transparent;
 }
 
 .nav-link.active {
-  background: var(--green-200);
-  color: var(--primary-dark);
+  color: var(--brand-dark);
+  background: transparent;
+  border-bottom-color: var(--brand-primary);
+}
+
+/* Select nav — champagne premium active state */
+.nav-link-select.active {
+  background: var(--cream);
+  border: 1px solid var(--border-champagne);
+  border-bottom: 1px solid var(--border-champagne);
+  color: var(--gold-dark);
+}
+
+.nav-link-select:hover:not(.active) {
+  color: var(--gold-dark);
+  background: var(--ivory);
 }
 
 .cart-link { position: relative; }
@@ -93,7 +108,7 @@
   position: absolute;
   top: 0;
   right: 4px;
-  background: var(--primary);
+  background: var(--brand-primary);
   color: var(--white);
   border-radius: 50%;
   width: 20px;
@@ -105,9 +120,8 @@
   font-weight: 700;
 }
 
-/* Primary nav CTA (Order Now in nav if used) */
 .nav-btn-primary {
-  background: var(--primary);
+  background: var(--brand-primary);
   color: var(--white) !important;
   padding: 8px 20px;
   border-radius: var(--radius-md);
@@ -118,29 +132,51 @@
 }
 
 .nav-btn-primary:hover {
-  background: var(--primary-hover);
+  background: var(--brand-dark);
 }
 
-/* Secondary nav buttons (Login, Restaurant Portal) */
-.nav-btn, .signup-btn {
+.nav-btn {
   background: var(--white);
-  color: var(--primary-dark) !important;
+  color: var(--ink) !important;
   padding: 8px 20px;
   border-radius: var(--radius-md);
   font-size: 0.95rem;
   font-weight: 600;
-  border: 1px solid var(--primary);
+  border: 1px solid var(--border);
   cursor: pointer;
 }
 
-.nav-btn:hover, .signup-btn:hover {
-  background: var(--green-200);
+.nav-btn:hover {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary) !important;
+}
+
+.signup-btn {
+  background: var(--brand-primary);
+  color: var(--white) !important;
+  padding: 8px 20px;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.signup-btn:hover {
+  background: var(--brand-dark);
+}
+
+.signup-btn:active {
+  background: var(--brand-deep);
 }
 
 .logout-btn {
   background: var(--white);
-  color: var(--primary-dark);
-  border: 1px solid var(--primary);
+  color: var(--muted);
+  border: 1px solid var(--border);
   padding: 6px 16px;
   border-radius: var(--radius-md);
   font-weight: 600;
@@ -148,11 +184,13 @@
 }
 
 .logout-btn:hover {
-  background: var(--green-200);
+  border-color: var(--border);
+  background: var(--sage-50);
+  color: var(--ink);
 }
 
 .user-name, .restaurant-name {
-  color: var(--text-secondary);
+  color: var(--muted);
   font-size: 0.9rem;
   padding: 8px 12px;
 }

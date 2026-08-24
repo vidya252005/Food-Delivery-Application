@@ -1,35 +1,35 @@
-/** Semantic status colors — aligned with LLD order & delivery state machines */
+/** Semantic status colors — aligned with LLD order state machine */
 
 export const ORDER_STATUS_COLORS = {
-  created: '#66736B',
-  payment_pending: '#C98200',
-  confirmed: '#2878C8',
-  restaurant_accepted: '#2878C8',
-  preparing: '#E47B25',
-  ready_for_pickup: '#0F9F4F',
-  ready: '#0F9F4F',
-  out_for_delivery: '#7357C8',
-  'out for delivery': '#7357C8',
-  delivered: '#087A3A',
-  cancelled: '#D64545',
-  pending: '#C98200',
+  created: '#8B958F',
+  payment_pending: '#B87922',
+  confirmed: '#57748C',
+  restaurant_accepted: '#4F7D65',
+  preparing: '#C47B39',
+  ready_for_pickup: '#2E7D57',
+  ready: '#2E7D57',
+  out_for_delivery: '#7566A8',
+  'out for delivery': '#7566A8',
+  delivered: '#176B45',
+  cancelled: '#B94A48',
+  pending: '#B87922',
 };
 
 export const DELIVERY_PARTNER_STATUS_COLORS = {
-  available: '#0F9F4F',
-  assigned: '#2878C8',
-  picked_up: '#7357C8',
-  delivering: '#E47B25',
-  offline: '#66736B',
+  available: '#2E7D57',
+  assigned: '#57748C',
+  picked_up: '#7566A8',
+  delivering: '#C47B39',
+  offline: '#8B958F',
 };
 
 export const PAYMENT_STATUS_COLORS = {
-  success: '#0F9F4F',
-  successful: '#0F9F4F',
-  processing: '#C98200',
-  pending: '#C98200',
-  failed: '#D64545',
-  refunded: '#7357C8',
+  success: '#2E7D57',
+  successful: '#2E7D57',
+  processing: '#B87922',
+  pending: '#B87922',
+  failed: '#B94A48',
+  refunded: '#57748C',
 };
 
 const normalizeStatus = (status) =>

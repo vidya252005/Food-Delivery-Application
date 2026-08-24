@@ -1,8 +1,8 @@
 .dietary-filter-bar {
-  background: #fff;
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 12px;
-  padding: 1rem;
+  background: var(--ivory);
+  border: 1px solid var(--border-filter);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.15rem;
   margin-bottom: 1.25rem;
 }
 
@@ -18,7 +18,7 @@
   display: block;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--ink);
   margin-bottom: 0.5rem;
 }
 
@@ -29,25 +29,31 @@
 }
 
 .filter-chip {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--text-pill);
   font-size: 0.8rem;
   padding: 0.35rem 0.75rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.15s ease;
 }
 
 .filter-chip:hover {
-  border-color: var(--color-primary, #22a055);
+  border-color: var(--sage-300);
 }
 
 .filter-chip.active {
-  background: var(--color-primary-light, #e8f5ee);
-  border-color: var(--color-primary, #22a055);
-  color: var(--color-primary-dark, #1a6b3c);
+  background: var(--sage-100);
+  border-color: var(--border-sage-selected);
+  color: var(--brand-dark);
   font-weight: 600;
+}
+
+.filter-chip.active.premium {
+  background: var(--cream);
+  border-color: var(--border-champagne);
+  color: var(--gold-dark);
 }
 
 .filter-row {
@@ -62,6 +68,7 @@
   align-items: center;
   gap: 0.4rem;
   font-size: 0.85rem;
+  color: var(--body);
   cursor: pointer;
 }
 
@@ -70,10 +77,18 @@
   align-items: center;
   gap: 0.4rem;
   font-size: 0.85rem;
+  color: var(--body);
 }
 
 .filter-select select {
   padding: 0.3rem 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  background: var(--white);
+}
+
+.filter-toggle:has(input:checked) {
+  color: var(--gold-dark);
+  font-weight: 600;
 }

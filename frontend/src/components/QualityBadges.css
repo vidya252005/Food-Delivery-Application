@@ -10,41 +10,75 @@
   margin: 0.25rem 0;
 }
 
+/* Quality score — sage default, champagne for exceptional (90+) */
 .quality-score {
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--color-primary-dark, #1a6b3c);
-  background: var(--color-primary-light, #e8f5ee);
+  color: var(--brand-primary);
+  background: var(--sage-100);
   padding: 0.2rem 0.55rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
+}
+
+.quality-score--exceptional {
+  background: var(--cream);
+  color: var(--gold-dark);
 }
 
 .quality-badge {
   font-size: 0.72rem;
   font-weight: 600;
   padding: 0.2rem 0.5rem;
-  border-radius: 999px;
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #e5e7eb;
+  border-radius: var(--radius-pill);
+  background: var(--sage-50);
+  color: var(--muted);
+  border: 1px solid var(--border-light);
 }
 
+/* Verified — subtle, not loud green */
 .quality-badge.verified {
-  background: #ecfdf5;
-  color: #047857;
-  border-color: #a7f3d0;
+  background: var(--sage-50);
+  color: #45614F;
+  border-color: var(--border-verified);
 }
 
+/* Nutrition — distinct warm neutral */
+.quality-badge.nutrition {
+  background: #F7F5EF;
+  color: var(--muted);
+  border-color: var(--border-light);
+}
+
+/* Dietary tags — muted olive family */
+.quality-badge.organic {
+  background: #EEF5ED;
+  color: #4D694E;
+  border-color: #D8E5D6;
+}
+
+.quality-badge.vegetarian {
+  background: #EDF6F0;
+  color: #41634D;
+  border-color: #D0E4D8;
+}
+
+.quality-badge.protein {
+  background: #F3F4EE;
+  color: #5D644E;
+  border-color: #E0E3D6;
+}
+
+/* Select — champagne premium */
 .quality-badge.select {
-  background: #fef3c7;
-  color: #92400e;
-  border-color: #fcd34d;
+  background: var(--cream);
+  color: var(--gold-dark);
+  border-color: var(--border-champagne);
 }
 
 .quality-breakdown {
-  background: #fff;
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 12px;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
   padding: 1rem 1.25rem;
   margin: 1rem 0;
 }
@@ -52,20 +86,24 @@
 .quality-breakdown h4 {
   margin: 0 0 0.5rem;
   font-size: 0.95rem;
-  color: var(--text-heading, #111827);
+  color: var(--ink);
 }
 
 .quality-overall {
   font-size: 2rem;
   font-weight: 800;
-  color: var(--color-primary-dark, #1a6b3c);
+  color: var(--brand-primary);
   margin-bottom: 0.75rem;
+}
+
+.quality-overall--exceptional {
+  color: var(--gold-dark);
 }
 
 .quality-overall span {
   font-size: 1rem;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--subtle);
 }
 
 .quality-breakdown ul {
@@ -85,14 +123,14 @@
 
 .quality-bar-wrap {
   height: 6px;
-  background: #e5e7eb;
-  border-radius: 999px;
+  background: var(--border-light);
+  border-radius: var(--radius-pill);
   overflow: hidden;
 }
 
 .quality-bar {
   display: block;
   height: 100%;
-  background: var(--color-primary, #22a055);
-  border-radius: 999px;
+  background: var(--brand-primary);
+  border-radius: var(--radius-pill);
 }

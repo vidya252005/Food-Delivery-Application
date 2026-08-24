@@ -1,71 +1,106 @@
 :root {
-  /* Brand greens */
-  --primary: #0F9F4F;
-  --primary-dark: #087A3A;
-  --primary-deep: #075C2D;
-  --primary-hover: #087A3A;
-  --primary-active: #075C2D;
+  /* Brand */
+  --brand-primary: #176B45;
+  --brand-dark: #0F4F34;
+  --brand-deep: #0B3D28;
 
-  --green-50: #F6FCF8;
-  --green-100: #EFFAF3;
-  --green-200: #E5F7EB;
-  --green-300: #D5E9DB;
-  --green-border: #B9E3C7;
-  --green-border-soft: #C9D7CF;
+  /* Sage */
+  --sage-50: #F4F8F5;
+  --sage-100: #EAF4EE;
+  --sage-200: #D5E7DB;
+  --sage-300: #BFD8C9;
 
-  /* Neutrals */
-  --white: #FFFFFF;
-  --text-primary: #17211B;
-  --text-secondary: #66736B;
-  --text-muted: #8A958E;
-  --text-pill: #425148;
-  --border: #DCE5DF;
-  --border-light: #E8EEE9;
+  /* Warm neutrals */
+  --ivory: #FCFBF7;
+  --cream: #F7F0DE;
+  --gold: #C9A45C;
+  --gold-dark: #7A612E;
+  --gold-muted: #9B6C27;
+
+  /* Text */
+  --ink: #18221D;
+  --body: #3E4943;
+  --muted: #66736B;
+  --subtle: #8B958F;
+  --text-pill: #46524B;
+
+  /* Borders */
+  --border: #DDE4DF;
+  --border-light: #E9EEEA;
+  --border-warm: #E6E1D6;
+  --border-filter: #E9E1CF;
+  --border-champagne: #D9BD7B;
+  --border-verified: #CFE1D5;
+  --border-sage-selected: #8FBEA4;
 
   /* Semantic */
-  --success: #0F9F4F;
-  --warning: #C98200;
-  --error: #D64545;
-  --info: #2878C8;
-  --purple: #7357C8;
-  --orange: #E47B25;
+  --success: #2E7D57;
+  --warning: #B87922;
+  --error: #B94A48;
+  --info: #57748C;
 
-  /* Rating */
-  --rating-bg: #FFF4D8;
-  --rating-text: #8A5A00;
-  --rating-star: #E4A11B;
+  /* Natural accent */
+  --olive: #687653;
 
-  /* Legacy aliases (keep existing CSS working) */
-  --color-primary: var(--primary);
-  --color-primary-dark: var(--primary-dark);
-  --color-primary-darker: var(--primary-deep);
-  --color-primary-light: var(--primary);
+  /* Base */
+  --white: #FFFFFF;
+
+  /* Legacy aliases — map existing CSS to premium tokens */
+  --primary: var(--brand-primary);
+  --primary-dark: var(--brand-dark);
+  --primary-deep: var(--brand-deep);
+  --primary-hover: var(--brand-dark);
+  --primary-active: var(--brand-deep);
+
+  --green-50: var(--sage-50);
+  --green-100: var(--sage-100);
+  --green-200: var(--sage-200);
+  --green-300: var(--sage-300);
+  --green-border: var(--sage-300);
+  --green-border-soft: var(--border);
+
+  --text-primary: var(--ink);
+  --text-secondary: var(--muted);
+  --text-muted: var(--subtle);
+  --text-heading: var(--ink);
+  --text-body: var(--body);
+
+  --color-primary: var(--brand-primary);
+  --color-primary-dark: var(--brand-dark);
+  --color-primary-darker: var(--brand-deep);
+  --color-primary-light: var(--sage-100);
   --color-on-primary: var(--white);
-  --color-accent: var(--primary);
-  --color-accent-dark: var(--primary-dark);
-  --color-accent-light: var(--green-200);
-  --color-accent-muted: var(--green-300);
+  --color-accent: var(--brand-primary);
+  --color-accent-dark: var(--brand-dark);
+  --color-accent-light: var(--sage-100);
+  --color-accent-muted: var(--sage-200);
   --color-bg: var(--white);
-  --color-bg-subtle: var(--green-50);
+  --color-bg-subtle: var(--sage-50);
   --color-bg-page: var(--white);
+  --color-bg-premium: var(--ivory);
   --color-surface: var(--white);
-  --color-text: var(--text-primary);
-  --color-text-muted: var(--text-secondary);
-  --color-text-light: var(--text-muted);
+  --color-text: var(--ink);
+  --color-text-muted: var(--muted);
+  --color-text-light: var(--subtle);
   --color-border: var(--border);
   --color-danger: var(--error);
-  --color-danger-light: #FEF2F2;
+  --color-danger-light: #FDF5F4;
 
-  /* Gradients & shadows */
-  --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  --gradient-page: linear-gradient(180deg, var(--white) 0%, var(--green-50) 100%);
+  /* Rating — champagne warm */
+  --rating-bg: #FBF3DF;
+  --rating-text: #806525;
+  --rating-star: var(--gold);
 
-  --shadow-card: 0 2px 10px rgba(20, 40, 28, 0.05);
-  --shadow-float: 0 4px 20px rgba(20, 40, 28, 0.08);
-  --shadow-modal: 0 12px 40px rgba(20, 40, 28, 0.12);
+  /* Shadows — soft neutral, not green */
+  --shadow-card: 0 4px 18px rgba(24, 34, 29, 0.06);
+  --shadow-float: 0 4px 20px rgba(24, 34, 29, 0.06);
+  --shadow-modal: 0 12px 40px rgba(24, 34, 29, 0.1);
   --shadow-sm: var(--shadow-card);
   --shadow-md: var(--shadow-float);
   --shadow-lg: var(--shadow-modal);
+
+  --gradient-primary: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-dark) 100%);
+  --gradient-page: linear-gradient(180deg, var(--white) 0%, var(--sage-50) 100%);
 
   /* Radius */
   --radius-sm: 8px;
@@ -74,8 +109,8 @@
   --radius-xl: 16px;
   --radius-pill: 999px;
 
-  /* Focus ring */
-  --focus-ring: 0 0 0 3px var(--green-200);
+  /* Focus — subtle sage ring, not blue */
+  --focus-ring: 0 0 0 3px var(--sage-100);
 }
 
 * {
@@ -87,9 +122,21 @@
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background-color: var(--white);
-  color: var(--text-primary);
+  color: var(--ink);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Typography hierarchy */
+h1 { color: var(--brand-dark); }
+h2, h3 { color: var(--ink); }
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 code {
