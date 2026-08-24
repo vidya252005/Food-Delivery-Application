@@ -18,6 +18,8 @@ module.exports = [
         setInterval: 'readonly',
         clearInterval: 'readonly',
         Promise: 'readonly',
+        fetch: 'readonly',
+        URL: 'readonly',
       },
     },
     rules: {
