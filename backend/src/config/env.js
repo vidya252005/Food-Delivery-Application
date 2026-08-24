@@ -1,4 +1,24 @@
 require('dotenv').config({ quiet: true });
+const { URL } = require('node:url');
+
+function pgFromDatabaseUrl(urlString) {
+  if (!urlString) return null;
+  try {
+    const u = new URL(urlString);
+    return {
+      PG_HOST: u.hostname,
+      PG_PORT: parseInt(u.port || '5432', 10),
+      PG_DATABASE: u.pathname.replace(/^\//, ''),
+      PG_USER: decodeURIComponent(u.username),
+      PG_PASSWORD: decodeURIComponent(u.password),
+      PG_SSL: true,
+    };
+  } catch {
+    return null;
+  }
+}
+
+const fromUrl = pgFromDatabaseUrl(process.env.DATABASE_URL);
 
 const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
@@ -6,11 +26,15 @@ const env = {
 
   // Individual PG* vars are preferred over a single DATABASE_URL so each
   // piece (pool size, timeouts) can be tuned independently per environment.
-  PG_HOST: process.env.PG_HOST || 'localhost',
-  PG_PORT: parseInt(process.env.PG_PORT || '5432', 10),
-  PG_DATABASE: process.env.PG_DATABASE || 'food_delivery',
-  PG_USER: process.env.PG_USER || 'food_delivery_app',
-  PG_PASSWORD: process.env.PG_PASSWORD || 'devpassword',
+  PG_HOST: process.env.PG_HOST || fromUrl?.PG_HOST || 'localhost',
+  PG_PORT: parseInt(process.env.PG_PORT || String(fromUrl?.PG_PORT || 5432), 10),
+  PG_DATABASE: process.env.PG_DATABASE || fromUrl?.PG_DATABASE || 'food_delivery',
+  PG_USER: process.env.PG_USER || fromUrl?.PG_USER || 'food_delivery_app',
+  PG_PASSWORD: process.env.PG_PASSWORD || fromUrl?.PG_PASSWORD || 'devpassword',
+  PG_SSL:
+    process.env.PG_SSL === 'true'
+    || fromUrl?.PG_SSL
+    || (process.env.PG_HOST || fromUrl?.PG_HOST || '').includes('render.com'),
 
   // Connection pool tuning - see src/config/db.js for how these are used.
   PG_POOL_MAX: parseInt(process.env.PG_POOL_MAX || '20', 10),

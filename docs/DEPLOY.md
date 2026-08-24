@@ -28,11 +28,34 @@ Two supported paths: **Render** (free tier, recommended for portfolio) or **VPS 
 
 ### 2. Seed demo data (once)
 
-In Render → **foodclub-api** → **Shell**:
+Render **Shell** is not available on the free tier. Use either method below.
+
+#### Method A — seed from your laptop (recommended)
+
+1. Render → **foodclub-db** → **Connections** → copy **External Database URL**  
+   (looks like `postgresql://food_delivery_app:PASSWORD@dpg-xxxxx.oregon-postgres.render.com/food_delivery`)
+
+2. On your Mac, from the project folder:
 
 ```bash
-node scripts/seed.js
+cd backend
+npm ci
+DATABASE_URL='postgresql://USER:PASS@HOST/food_delivery' node scripts/seed.js
 ```
+
+Replace with your full External Database URL from Render (wrap in quotes).
+
+3. Verify:
+
+```bash
+curl https://foodclub-api-d79l.onrender.com/api/restaurants
+```
+
+#### Method B — one-time seed on deploy (no Shell)
+
+1. **foodclub-api** → **Environment** → add `RUN_SEED` = `true`
+2. **Manual Deploy** (pre-deploy runs migrate + seed)
+3. Remove `RUN_SEED` or set to `false` after seed succeeds (seed wipes data if run again)
 
 Demo login: `priya@example.com` / `password123`
 
@@ -118,6 +141,33 @@ Never commit `.env` files with real secrets.
 ---
 
 ## Troubleshooting
+
+### `Missing script: "dev"` / build runs `yarn` at repo root
+
+Render is treating the repo as a **Node Web Service at the root**, not as the backend in `backend/`.
+
+**Fix on the existing `foodclub-api` service (fastest):**
+
+1. Open **foodclub-api** → **Settings**
+2. Set **Root Directory** → `backend`
+3. Set **Environment** → **Node** (not Docker unless you know Docker is configured)
+4. **Build Command** → `npm ci --omit=dev`
+5. **Start Command** → `node src/server.js`  
+   (delete `npm run dev` — that is local-only)
+6. **Pre-Deploy Command** → `node src/db/migrate.js`
+7. **Save** → **Manual Deploy**
+
+Also confirm you have a **PostgreSQL** database linked with `PG_HOST`, `PG_PORT`, `PG_DATABASE`, `PG_USER`, `PG_PASSWORD`, plus `JWT_SECRET` and `GOOGLE_CLIENT_ID`.
+
+**Full stack (recommended):** delete the broken service → **New → Blueprint** → select repo. Render reads `render.yaml` and creates database + API + static frontend.
+
+| Service | Type | Settings |
+|---------|------|----------|
+| **foodclub-api** | Web Service | Root dir `backend`, Build `npm ci --omit=dev`, Start `node src/server.js`, Pre-deploy `node src/db/migrate.js` |
+| **foodclub-web** | **Static Site** | Build: `chmod +x frontend/scripts/render-build.sh && ./frontend/scripts/render-build.sh`, Publish: `frontend/build`, rewrite `/*` → `/index.html` |
+| **foodclub-db** | PostgreSQL | Free plan |
+
+### Other issues
 
 | Issue | Fix |
 |-------|-----|

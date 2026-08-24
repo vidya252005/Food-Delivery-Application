@@ -8,13 +8,15 @@ databases:
     user: food_delivery_app
 
 services:
-  # ── Backend API (Docker) ──
+  # ── Backend API (Node — simpler on Render free tier than Docker) ──
   - type: web
     name: foodclub-api
-    runtime: docker
-    dockerfilePath: ./Dockerfile
-    dockerContext: ./backend
+    runtime: node
+    rootDir: backend
     plan: free
+    buildCommand: npm ci --omit=dev
+    startCommand: node src/server.js
+    preDeployCommand: node src/db/migrate.js && if [ "$RUN_SEED" = "true" ]; then node scripts/seed.js; fi
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -44,6 +46,8 @@ services:
           name: foodclub-db
           property: password
       - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: RUN_SEED
         sync: false
       - key: FRONTEND_URL
         fromService:

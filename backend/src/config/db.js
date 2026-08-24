@@ -31,6 +31,7 @@ const pool = new Pool({
   min: env.PG_POOL_MIN,
   idleTimeoutMillis: env.PG_IDLE_TIMEOUT_MS,
   connectionTimeoutMillis: env.PG_CONN_TIMEOUT_MS,
+  ssl: env.PG_SSL ? { rejectUnauthorized: false } : undefined,
 });
 
 pool.on('error', (err) => {
