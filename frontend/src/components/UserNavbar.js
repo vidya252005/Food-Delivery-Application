@@ -14,7 +14,10 @@ const UserNavbar = () => {
   const { pathname } = useLocation();
 
   const navClass = (path, extra = '') => {
-    const active = path === '/select' ? pathname.startsWith('/select') : pathname === path;
+    let active = false;
+    if (path === '/') active = pathname === '/' || pathname === '/home';
+    else if (path === '/select') active = pathname.startsWith('/select');
+    else active = pathname === path;
     return `nav-link ${extra}${active ? ' active' : ''}`.trim();
   };
 
@@ -22,7 +25,7 @@ const UserNavbar = () => {
     <header className="navbar user-navbar">
       <div className="nav-container">
         <div className="nav-brand">
-          <Link to="/restaurants" className="nav-logo">FoodClub</Link>
+          <Link to="/" className="nav-logo">FoodClub</Link>
           <button
             type="button"
             className="location-chip"
@@ -35,6 +38,7 @@ const UserNavbar = () => {
         </div>
 
         <nav className="nav-menu" aria-label="Main">
+          <Link to="/" className={navClass('/')}>Home</Link>
           <Link to="/restaurants" className={navClass('/restaurants')}>Discover</Link>
           <Link to="/select" className={navClass('/select', 'nav-link-select')}>Select</Link>
           {isLoggedIn && <Link to="/preferences" className={navClass('/preferences')}>Preferences</Link>}

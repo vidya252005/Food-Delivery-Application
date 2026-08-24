@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HERO_DISH_IMAGES } from '../utils/foodImages';
 import { formatPrice } from '../utils/format';
@@ -56,13 +56,15 @@ export const HERO_FOODS = [
   },
 ];
 
+const AUTO_MS = 4500;
+
 export default function HeroFoodCarousel() {
   const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
   const navigate = useNavigate();
+  const touchStartX = useRef(null);
   const total = HERO_FOODS.length;
   const current = HERO_FOODS[index];
-  const nextOne = HERO_FOODS[(index + 1) % total];
-  const nextTwo = HERO_FOODS[(index + 2) % total];
 
   const goPrev = useCallback(() => {
     setIndex((i) => (i - 1 + total) % total);
@@ -72,45 +74,101 @@ export default function HeroFoodCarousel() {
     setIndex((i) => (i + 1) % total);
   }, [total]);
 
+  useEffect(() => {
+    if (paused) return undefined;
+    const id = setInterval(goNext, AUTO_MS);
+    return () => clearInterval(id);
+  }, [paused, goNext]);
+
+  const onTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const onTouchEnd = (e) => {
+    if (touchStartX.current == null) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    if (delta > 48) goPrev();
+    else if (delta < -48) goNext();
+    touchStartX.current = null;
+  };
+
+  // Trailing queued items on the right side
+  const upcomingQueue = [
+    HERO_FOODS[(index + 1) % total],
+    HERO_FOODS[(index + 2) % total],
+    HERO_FOODS[(index + 3) % total],
+  ];
+
   return (
-    <div className="hero-carousel">
-      <button type="button" className="carousel-arrow carousel-arrow-left" onClick={goPrev} aria-label="Previous dish">
-        ‹
+    <div
+      className="hero-carousel"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
+      {/* ── Left Thin Chevron ── */}
+      <button
+        type="button"
+        className="carousel-chevron left-chevron"
+        onClick={goPrev}
+        aria-label="Previous dish"
+      >
+        &#x2039;
       </button>
 
-      <div className="carousel-center">
-        <span className="carousel-badge">Fast Delivery · Bengaluru</span>
-        <div className="carousel-plate">
-              <FoodImage
-                src={current.image}
-                alt={current.name}
-                className="carousel-plate-img"
-                loading="eager"
-                fetchPriority="high"
-              />
+      {/* ── Main Center Spotlight ── */}
+      <div className="carousel-spotlight">
+        <span className="carousel-badge">Fast Delivery 🚚</span>
+
+        <div key={current.id} className="carousel-plate-wrap">
+          <div className="carousel-plate">
+            <FoodImage
+              src={current.image}
+              alt={current.name}
+              className="carousel-plate-img"
+              loading="eager"
+              fetchPriority="high"
+            />
+          </div>
         </div>
+
         <p className="carousel-dish-label">{current.name}</p>
-        <div className="carousel-price-row">
-          <span className="carousel-price">{formatPrice(current.price)}</span>
-          <button
-            type="button"
-            className="carousel-add-btn"
-            onClick={() => navigate(`/restaurants?q=${encodeURIComponent(current.query)}`)}
-            aria-label={`Browse ${current.name}`}
-          >
-            +
-          </button>
-        </div>
+        <p className="carousel-price">{formatPrice(current.price)}</p>
+
+        <button
+          type="button"
+          className="carousel-add-btn"
+          onClick={() => navigate(`/restaurants?q=${encodeURIComponent(current.query)}`)}
+          aria-label={`Order ${current.name}`}
+        >
+          +
+        </button>
       </div>
 
-      <div className="carousel-upnext" aria-hidden="true">
-        <FoodImage src={nextOne.image} alt="" className="carousel-upnext-img" />
-        <FoodImage src={nextTwo.image} alt="" className="carousel-upnext-img carousel-upnext-img--dim" />
-      </div>
-
-      <button type="button" className="carousel-arrow carousel-arrow-right" onClick={goNext} aria-label="Next dish">
-        ›
+      {/* ── Right Thin Chevron ── */}
+      <button
+        type="button"
+        className="carousel-chevron right-chevron"
+        onClick={goNext}
+        aria-label="Next dish"
+      >
+        &#x203A;
       </button>
+
+      {/* ── Trailing Circular Queue (Right) ── */}
+      <div className="carousel-queue-trail" aria-hidden="true">
+        {upcomingQueue.map((item, idx) => (
+          <button
+            key={item.id}
+            type="button"
+            className={`queue-node queue-node-${idx}`}
+            onClick={() => setIndex(HERO_FOODS.findIndex((f) => f.id === item.id))}
+          >
+            <FoodImage src={item.image} alt={item.name} className="queue-node-img" />
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

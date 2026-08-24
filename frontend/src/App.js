@@ -62,8 +62,8 @@ function AppRoutes() {
                 <div className="App">
                   <NavbarSwitcher />
                   <Routes>
-                    <Route path="/" element={<Navigate to="/restaurants" replace />} />
-                    <Route path="/home" element={<Landing />} />
+                    <Route path="/" element={<Landing />} />
+                    <Route path="/home" element={<Navigate to="/" replace />} />
                     <Route path="/restaurants" element={<Restaurants />} />
                     <Route path="/restaurant/:id" element={<RestaurantDetail />} />
                     <Route path="/cart" element={<Cart />} />
