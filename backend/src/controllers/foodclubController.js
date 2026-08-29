@@ -27,7 +27,7 @@ const getMembership = asyncHandler(async (req, res) => {
 });
 
 const subscribe = asyncHandler(async (req, res) => {
-  const membership = await membershipService.subscribe(req.userId);
+  const membership = await membershipService.subscribe(req.userId, req.body);
   res.status(201).json(membership);
 });
 

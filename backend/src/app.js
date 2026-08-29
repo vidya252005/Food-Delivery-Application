@@ -4,6 +4,7 @@ const { pool, poolStats } = require('./config/db');
 const env = require('./config/env');
 const errorHandler = require('./middleware/errorHandler');
 const { authRateLimit, apiRateLimit } = require('./middleware/rateLimit');
+const requestLogger = require('./middleware/requestLogger');
 
 const authRoutes = require('./routes/auth.routes');
 const restaurantsRoutes = require('./routes/restaurants.routes');
@@ -38,10 +39,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 if (env.NODE_ENV !== 'test') {
-  app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
-    next();
-  });
+  app.use(requestLogger);
 }
 
 /** Health check - also used as the Docker HEALTHCHECK and the CI smoke test. */

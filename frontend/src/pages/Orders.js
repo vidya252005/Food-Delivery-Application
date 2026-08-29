@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { orderAPI, api } from '../utils/api';
+import { orderAPI, feedbackAPI } from '../utils/api';
+import { loginPathWithRedirect } from '../utils/authRedirect';
 import { getOrderStatusColor } from '../utils/statusColors';
 import { formatPrice } from '../utils/format';
+import {
+  CUSTOMER_ORDER_STEPS,
+  getCustomerStatusIcon,
+  getCustomerStepIndex,
+  formatStatusLabel,
+} from '../utils/orderStatus';
 import OrderNutritionSummary from '../components/OrderNutritionSummary';
 import './Orders.css';
 
@@ -18,7 +25,7 @@ function Orders() {
 
   useEffect(() => {
     if (!isLoggedIn || !user) {
-      navigate('/login');
+      navigate(loginPathWithRedirect('/orders'));
       return;
     }
     fetchOrders();
@@ -41,8 +48,8 @@ function Orders() {
 
   const checkFeedbackStatus = async (orderId) => {
     try {
-      const response = await api.get(`/feedback/order/${orderId}`);
-      setFeedbackStatus((prev) => ({ ...prev, [orderId]: !!response.data }));
+      const data = await feedbackAPI.getForOrder(orderId);
+      setFeedbackStatus((prev) => ({ ...prev, [orderId]: !!data }));
     } catch (err) {
       console.error('Error checking feedback:', err);
     }
@@ -50,17 +57,7 @@ function Orders() {
 
   const getStatusColor = getOrderStatusColor;
 
-  const getStatusIcon = (status) => {
-    const icons = {
-      pending: '⏳',
-      confirmed: '✅',
-      preparing: '👨‍🍳',
-      'out for delivery': '🚚',
-      delivered: '✅',
-      cancelled: '❌',
-    };
-    return icons[status] || '📦';
-  };
+  const getStatusIcon = getCustomerStatusIcon;
 
   if (!isLoggedIn) return null;
 
@@ -125,7 +122,7 @@ function Orders() {
                     className="order-status"
                     style={{ backgroundColor: getStatusColor(order.status) }}
                   >
-                    {getStatusIcon(order.status)} {order.status.toUpperCase()}
+                    {getStatusIcon(order.status)} {formatStatusLabel(order.status).toUpperCase()}
                   </div>
                 </div>
 
@@ -150,30 +147,20 @@ function Orders() {
 
                 {/* 🚚 NEW: Order Status Progress Tracker */}
                 <div className="order-status-tracker">
-                  {["pending", "confirmed", "preparing", "out for delivery", "delivered"].map(
-                    (step, index) => {
-                      const statusOrder = [
-                        "pending",
-                        "confirmed",
-                        "preparing",
-                        "out for delivery",
-                        "delivered",
-                      ];
-                      const currentIndex = statusOrder.indexOf(order.status);
-                      const isCompleted = index <= currentIndex;
+                  {CUSTOMER_ORDER_STEPS.map((step) => {
+                      const currentIndex = getCustomerStepIndex(order.status);
+                      const stepIndex = CUSTOMER_ORDER_STEPS.findIndex((s) => s.key === step.key);
+                      const isCompleted = currentIndex >= 0 && stepIndex <= currentIndex;
 
                       return (
-                        <div key={step} className="status-step">
+                        <div key={step.key} className="status-step">
                           <div className={`status-circle ${isCompleted ? "completed" : ""}`}></div>
                           <p className={`status-label ${isCompleted ? "completed-text" : ""}`}>
-                            {step === "out for delivery"
-                              ? "Out for Delivery"
-                              : step.charAt(0).toUpperCase() + step.slice(1)}
+                            {step.label}
                           </p>
                         </div>
                       );
-                    }
-                  )}
+                    })}
                 </div>
 
                 {/* 📦 Delivery Address & Payment */}

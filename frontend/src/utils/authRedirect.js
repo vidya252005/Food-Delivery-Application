@@ -12,8 +12,16 @@ export function getPostAuthPath(location, fallback = '/restaurants') {
   return fallback;
 }
 
-export const loginPathWithRedirect = (pathname) => ({
-  pathname: '/login',
-  search: pathname && pathname !== '/restaurants' ? `?redirect=${encodeURIComponent(pathname)}` : '',
-  state: pathname ? { from: { pathname } } : undefined,
-});
+function pathWithRedirect(pathname, loginPath) {
+  const path = pathname?.split('?')[0];
+  return {
+    pathname: loginPath,
+    search: path && path !== '/restaurants' ? `?redirect=${encodeURIComponent(pathname)}` : '',
+    state: pathname ? { from: pathname.startsWith('/') ? pathname : { pathname } } : undefined,
+  };
+}
+
+export const loginPathWithRedirect = (pathname) => pathWithRedirect(pathname, '/login');
+
+export const restaurantLoginPathWithRedirect = (pathname) =>
+  pathWithRedirect(pathname, '/restaurant-login');

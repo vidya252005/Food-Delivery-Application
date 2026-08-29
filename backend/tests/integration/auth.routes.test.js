@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('../../src/app');
+const { pool } = require('../../src/config/db');
 const { resetDb, closeDb } = require('../setup/db');
 
 beforeEach(async () => {
@@ -93,5 +94,28 @@ describe('restaurant auth', () => {
       .send({ email: 'bella@example.com', password: 'secret123' });
     expect(loginRes.status).toBe(200);
     expect(loginRes.body.data.restaurant.name).toBe('Bella Napoli');
+  });
+
+  test('registration provisions geocoordinates and a quality profile row', async () => {
+    const registerRes = await request(app).post('/api/auth/restaurant/register').send({
+      name: 'Fresh Start Cafe',
+      email: 'fresh@example.com',
+      password: 'secret123',
+      cuisine: ['Salads'],
+      address: { street: '100 Feet Road, Indiranagar', city: 'Bengaluru', state: 'KA', zipCode: '560038' },
+    });
+    expect(registerRes.status).toBe(201);
+    const restaurantId = registerRes.body.data.restaurant.id;
+
+    const { rows: [row] } = await pool.query(
+      `SELECT r.latitude, r.longitude, qp.overall_score
+       FROM restaurants r
+       LEFT JOIN quality_profiles qp ON qp.restaurant_id = r.id
+       WHERE r.id = $1`,
+      [restaurantId]
+    );
+    expect(row.latitude).not.toBeNull();
+    expect(row.longitude).not.toBeNull();
+    expect(Number(row.overall_score)).toBe(0);
   });
 });

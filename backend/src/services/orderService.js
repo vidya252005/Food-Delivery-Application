@@ -14,6 +14,7 @@ const SocketObserver = require('../events/observers/SocketObserver');
 const socketService = require('./socketService');
 const { OrderStatus } = require('../domain/enums');
 const { assertTransition, TRANSITIONS, LABELS } = require('../domain/orderStates');
+const { pickCartItems } = require('../utils/sanitize');
 
 // Wire observers once (LLD section 28–29)
 eventPublisher.subscribe(new NotificationObserver());
@@ -38,6 +39,50 @@ async function listForRestaurant(restaurantId, status) {
   return records.map(toOrderDTO);
 }
 
+function normalizeQuantity(raw) {
+  const quantity = Math.floor(Number(raw ?? 1));
+  if (!Number.isFinite(quantity) || quantity < 1) {
+    throw new AppError('quantity must be at least 1', 400);
+  }
+  if (quantity > 99) {
+    throw new AppError('quantity cannot exceed 99 per item', 400);
+  }
+  return quantity;
+}
+
+/** Resolve cart lines from menu_items — prices and names come from DB, not the client. */
+function resolveCartItems(items, restaurantId, menuById) {
+  if (!items.every((item) => item.menuItem)) {
+    throw new AppError('Each cart item must reference a menu item', 400);
+  }
+
+  return items.map((item) => {
+    const menu = menuById.get(item.menuItem);
+    if (!menu) throw new AppError(`Menu item not found: ${item.menuItem}`, 404);
+    if (menu.restaurant_id !== restaurantId) {
+      throw new AppError('Menu item does not belong to this restaurant', 400);
+    }
+    if (menu.available === false) {
+      throw new AppError(`"${menu.name}" is not available`, 400);
+    }
+
+    return {
+      menuItem: menu.id,
+      name: menu.name,
+      price: Number(menu.price),
+      quantity: normalizeQuantity(item.quantity),
+      calories: menu.calories,
+      proteinG: menu.protein_g,
+      carbsG: menu.carbs_g,
+      fatG: menu.fat_g,
+      sugarG: menu.sugar_g,
+      fiberG: menu.fiber_g,
+      dietaryTags: menu.dietary_tags || [],
+      allergens: menu.allergens || [],
+    };
+  });
+}
+
 /** Create order from cart — status CREATED → PAYMENT_PENDING (LLD section 32). */
 async function createFromCart({ user, restaurant, items, deliveryAddress }) {
   if (!user || !restaurant) throw new AppError('user and restaurant are required', 400);
@@ -45,11 +90,17 @@ async function createFromCart({ user, restaurant, items, deliveryAddress }) {
     throw new AppError('items must be a non-empty array', 400);
   }
 
+  const cartItems = pickCartItems(items);
+
   const restaurantRow = await restaurantRepository.findById(restaurant);
   if (!restaurantRow?.is_active) throw new AppError('Restaurant is not available', 400);
 
+  const menuIds = [...new Set(cartItems.map((item) => item.menuItem))];
+  const menuById = await restaurantRepository.findMenuItemsByIds(menuIds);
+  const resolvedItems = resolveCartItems(cartItems, restaurant, menuById);
+
   const isSelectMember = await membershipService.isSelectMember(user);
-  const pricing = pricingService.calculateOrderTotal(items, { isSelectMember });
+  const pricing = pricingService.calculateOrderTotal(resolvedItems, { isSelectMember });
   let etaMinutes = 35;
   const deliveryLat = deliveryAddress?.lat ?? null;
   const deliveryLng = deliveryAddress?.lng ?? null;
@@ -61,28 +112,10 @@ async function createFromCart({ user, restaurant, items, deliveryAddress }) {
     etaMinutes = geoService.calculateEtaMinutes(distanceKm);
   }
 
-  const menuIds = [...new Set(items.map((i) => i.menuItem).filter(Boolean))];
-  const menuById = await restaurantRepository.findMenuItemsByIds(menuIds);
-  const snapshotItems = items.map((item) => {
-    const menu = item.menuItem ? menuById.get(item.menuItem) : null;
-    if (!menu) return item;
-    return {
-      ...item,
-      calories: menu.calories,
-      proteinG: menu.protein_g,
-      carbsG: menu.carbs_g,
-      fatG: menu.fat_g,
-      sugarG: menu.sugar_g,
-      fiberG: menu.fiber_g,
-      dietaryTags: menu.dietary_tags || [],
-      allergens: menu.allergens || [],
-    };
-  });
-
   const record = await orderRepository.createWithItems({
     userId: user,
     restaurantId: restaurant,
-    items: snapshotItems,
+    items: resolvedItems,
     totalAmount: pricing.totalAmount,
     deliveryAddress,
     deliveryLat,

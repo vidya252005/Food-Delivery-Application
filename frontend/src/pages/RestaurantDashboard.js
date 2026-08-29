@@ -8,7 +8,6 @@ import QualityBadges, { QualityScoreBreakdown } from '../components/QualityBadge
 import './RestaurantDashboard.css';
 
 const RestaurantDashboard = () => {
-  console.log("✅ Rendering RestaurantDashboard");
   const { restaurant, isLoggedIn } = useRestaurant();
   const navigate = useNavigate();
 
@@ -162,12 +161,6 @@ const RestaurantDashboard = () => {
               <span className="action-icon">⚙️</span>
               <h3>Restaurant Profile</h3>
               <p>Update restaurant information</p>
-            </Link>
-
-            <Link to="/restaurant/analytics" className="action-card">
-              <span className="action-icon">📊</span>
-              <h3>Analytics</h3>
-              <p>View sales and performance</p>
             </Link>
 
             <Link to="/restaurant/verification" className="action-card">

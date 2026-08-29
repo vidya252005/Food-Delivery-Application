@@ -33,8 +33,8 @@ const env = {
   PG_PASSWORD: process.env.PG_PASSWORD || fromUrl?.PG_PASSWORD || 'devpassword',
   PG_SSL:
     process.env.PG_SSL === 'true'
-    || fromUrl?.PG_SSL
-    || (process.env.PG_HOST || fromUrl?.PG_HOST || '').includes('render.com'),
+    || (process.env.DATABASE_URL || '').includes('sslmode=require')
+    || /(^|\.)dpg-[a-z0-9]+\.render\.com$/i.test(process.env.PG_HOST || fromUrl?.PG_HOST || ''),
 
   // Connection pool tuning - see src/config/db.js for how these are used.
   PG_POOL_MAX: parseInt(process.env.PG_POOL_MAX || '20', 10),

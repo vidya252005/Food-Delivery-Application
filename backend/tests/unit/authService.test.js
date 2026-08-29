@@ -7,7 +7,7 @@ const userRepository = require('../../src/repositories/userRepository');
 const authService = require('../../src/services/authService');
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  jest.resetAllMocks();
 });
 
 describe('registerUser', () => {
@@ -23,7 +23,9 @@ describe('registerUser', () => {
   test('hashes the password before storing and never returns it', async () => {
     userRepository.findByEmail.mockResolvedValueOnce(null);
     bcrypt.hash.mockResolvedValueOnce('hashed-value');
-    userRepository.create.mockResolvedValueOnce({ id: 'u1', name: 'Asha', email: 'asha@example.com' });
+    userRepository.create.mockResolvedValueOnce({
+      id: 'u1', name: 'Asha', email: 'asha@example.com', role: 'user',
+    });
 
     const result = await authService.registerUser({
       name: 'Asha',
@@ -35,7 +37,9 @@ describe('registerUser', () => {
     expect(userRepository.create).toHaveBeenCalledWith(
       expect.objectContaining({ passwordHash: 'hashed-value' })
     );
-    expect(result.user).toEqual({ id: 'u1', name: 'Asha', email: 'asha@example.com' });
+    expect(result.user).toEqual({
+      id: 'u1', name: 'Asha', email: 'asha@example.com', role: 'user',
+    });
   });
 });
 
@@ -69,5 +73,24 @@ describe('loginUser', () => {
     const result = await authService.loginUser({ email: 'asha@example.com', password: 'secret123' });
     expect(typeof result.token).toBe('string');
     expect(result.user.email).toBe('asha@example.com');
+    expect(result.user.role).toBe('user');
+  });
+
+  test('maps legacy customer role to user in API response and JWT', async () => {
+    userRepository.findByEmail.mockResolvedValueOnce({
+      id: 'u1',
+      name: 'Asha',
+      email: 'asha@example.com',
+      password_hash: 'hashed-value',
+      role: 'customer',
+    });
+    bcrypt.compare.mockResolvedValueOnce(true);
+
+    const result = await authService.loginUser({ email: 'asha@example.com', password: 'secret123' });
+    expect(result.user.role).toBe('user');
+
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.verify(result.token, require('../../src/config/env').JWT_SECRET);
+    expect(decoded.role).toBe('user');
   });
 });

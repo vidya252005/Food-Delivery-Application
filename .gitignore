@@ -4,7 +4,8 @@ node_modules/
 .env.*.local
 backend/.env
 frontend/.env
-.DS_Storebuild/
+.DS_Store
+build/
 dist/
 coverage/
 .vscode/

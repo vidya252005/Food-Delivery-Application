@@ -4,6 +4,7 @@ import { useRestaurant } from "../context/RestaurantContext";
 import { orderAPI } from "../utils/api";
 import { getOrderStatusColor } from "../utils/statusColors";
 import { formatPrice } from "../utils/format";
+import { formatStatusLabel } from "../utils/orderStatus";
 import "./RestaurantOrders.css";
 
 const RestaurantOrders = () => {
@@ -12,7 +13,6 @@ const RestaurantOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState("All");
-  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const ORDER_STATUSES = [
     "All", "confirmed", "restaurant_accepted", "preparing",
@@ -26,7 +26,6 @@ const RestaurantOrders = () => {
     }
     fetchOrders();
 
-    // Auto-refresh every 30 seconds
     const interval = setInterval(fetchOrders, 30000);
     return () => clearInterval(interval);
   }, [isRestaurantLoggedIn, navigate]);
@@ -43,7 +42,6 @@ const RestaurantOrders = () => {
       setOrders(Array.isArray(data) ? data : []);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching orders:", error);
       setLoading(false);
     }
   };
@@ -52,7 +50,6 @@ const RestaurantOrders = () => {
     try {
       await orderAPI[action](orderId);
       fetchOrders();
-      setSelectedOrder(null);
     } catch (err) {
       alert(err.message || "Action failed");
     }
@@ -85,7 +82,6 @@ const RestaurantOrders = () => {
     return date.toLocaleDateString() + " " + date.toLocaleTimeString();
   };
 
-  // Safely compute derived values
   const filteredOrders = Array.isArray(orders)
     ? filterStatus === "All"
       ? orders
@@ -120,7 +116,6 @@ const RestaurantOrders = () => {
           </button>
         </div>
 
-        {/* Status Filter */}
         <div className="status-filter">
           {ORDER_STATUSES.map((status) => (
             <button
@@ -130,45 +125,37 @@ const RestaurantOrders = () => {
               }`}
               onClick={() => setFilterStatus(status)}
             >
-              {status === "All"
-                ? `All (${orderCounts.all})`
-                : `${status} (${orderCounts[status] || 0})`}
+              {status === "All" ? `All (${orderCounts.all})` : formatStatusLabel(status)}
             </button>
           ))}
         </div>
 
-        {/* Orders Grid */}
         {!Array.isArray(filteredOrders) || filteredOrders.length === 0 ? (
           <div className="no-orders">
-            <h2>📦 No {filterStatus !== "All" ? filterStatus : ""} orders</h2>
+            <h2>📦 No {filterStatus !== "All" ? formatStatusLabel(filterStatus) : ""} orders</h2>
             <p>Orders will appear here when customers place them</p>
           </div>
         ) : (
           <div className="orders-grid">
             {filteredOrders.map((order) => (
-              <div key={order._id} className="order-card">
+              <div key={order._id || order.id} className="order-card">
                 <div className="order-card-header">
                   <div>
-                    <h3>{order.orderNumber}</h3>
+                    <h3>{order.orderNumber || `#${(order._id || order.id || '').slice(0, 8)}`}</h3>
                     <p className="order-time">{formatTime(order.createdAt)}</p>
                   </div>
                   <span
                     className="order-status-badge"
                     style={{ backgroundColor: getStatusColor(order.status) }}
                   >
-                    {order.status}
+                    {formatStatusLabel(order.status)}
                   </span>
                 </div>
 
                 <div className="customer-info">
-                  <h4>👤 {order.customer?.name || "Customer"}</h4>
-                  <p>📞 {order.customer?.phone || "N/A"}</p>
-                  <p>📍 {order.customer?.address || "N/A"}</p>
-                  {order.deliveryInstructions && (
-                    <p className="delivery-note">
-                      📝 {order.deliveryInstructions}
-                    </p>
-                  )}
+                  <h4>👤 {order.customer?.name || order.user?.name || "Customer"}</h4>
+                  <p>📞 {order.customer?.phone || order.user?.phone || "N/A"}</p>
+                  <p>📍 {order.deliveryAddress?.street || order.customer?.address || "N/A"}</p>
                 </div>
 
                 <div className="order-items-list">
@@ -193,7 +180,7 @@ const RestaurantOrders = () => {
                         key={action}
                         type="button"
                         className="update-status-btn"
-                        onClick={() => runAction(order._id, action)}
+                        onClick={() => runAction(order._id || order.id, action)}
                       >
                         {label}
                       </button>
@@ -202,130 +189,6 @@ const RestaurantOrders = () => {
                 </div>
               </div>
             ))}
-          </div>
-        )}
-
-        {/* Order Details Modal */}
-        {selectedOrder && (
-          <div
-            className="modal-overlay"
-            onClick={() => setSelectedOrder(null)}
-          >
-            <div
-              className="modal-content order-details-modal"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="modal-header">
-                <h2>Order Details - {selectedOrder.orderNumber}</h2>
-                <button
-                  className="close-btn"
-                  onClick={() => setSelectedOrder(null)}
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="order-details-content">
-                <div className="detail-section">
-                  <h3>Order Information</h3>
-                  <p>
-                    <strong>Status:</strong>{" "}
-                    <span
-                      style={{
-                        color: getStatusColor(selectedOrder.status),
-                      }}
-                    >
-                      {selectedOrder.status}
-                    </span>
-                  </p>
-                  <p>
-                    <strong>Placed:</strong>{" "}
-                    {formatTime(selectedOrder.createdAt)}
-                  </p>
-                  <p>
-                    <strong>Total:</strong> $
-                    {selectedOrder.total?.toFixed(2)}
-                  </p>
-                </div>
-
-                <div className="detail-section">
-                  <h3>Customer Information</h3>
-                  <p>
-                    <strong>Name:</strong> {selectedOrder.customer?.name}
-                  </p>
-                  <p>
-                    <strong>Phone:</strong> {selectedOrder.customer?.phone}
-                  </p>
-                  <p>
-                    <strong>Address:</strong> {selectedOrder.customer?.address}
-                  </p>
-                  {selectedOrder.deliveryInstructions && (
-                    <p>
-                      <strong>Special Instructions:</strong>{" "}
-                      {selectedOrder.deliveryInstructions}
-                    </p>
-                  )}
-                </div>
-
-                <div className="detail-section">
-                  <h3>Order Items</h3>
-                  <table className="items-table">
-                    <thead>
-                      <tr>
-                        <th>Item</th>
-                        <th>Qty</th>
-                        <th>Price</th>
-                        <th>Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedOrder.items?.map((item, index) => (
-                        <tr key={index}>
-                          <td>{item.name}</td>
-                          <td>{item.quantity}</td>
-                          <td>${item.price?.toFixed(2)}</td>
-                          <td>
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="detail-actions">
-                  {getNextStatus(selectedOrder.status) && (
-                    <button
-                      className="action-btn primary"
-                      onClick={() =>
-                        updateOrderStatus(
-                          selectedOrder._id,
-                          getNextStatus(selectedOrder.status)
-                        )
-                      }
-                    >
-                      Mark as {getNextStatus(selectedOrder.status)}
-                    </button>
-                  )}
-                  {selectedOrder.status === "pending" && (
-                    <button
-                      className="action-btn danger"
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            "Are you sure you want to cancel this order?"
-                          )
-                        ) {
-                          updateOrderStatus(selectedOrder._id, "cancelled");
-                        }
-                      }}
-                    >
-                      Cancel Order
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
         )}
       </div>

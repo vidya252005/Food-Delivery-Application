@@ -3,7 +3,6 @@ const deliveryPartnerRepository = require('../repositories/deliveryPartnerReposi
 const orderRepository = require('../repositories/orderRepository');
 const { NearestPartnerStrategy } = require('../strategies/delivery/NearestPartnerStrategy');
 const { DeliveryPartnerStatus, DeliveryStatus, OrderStatus } = require('../domain/enums');
-const { eventPublisher } = require('../events/EventPublisher');
 const socketService = require('./socketService');
 const AppError = require('../utils/AppError');
 
@@ -54,11 +53,11 @@ async function markPickedUp(orderId, partnerId) {
 
 async function markDelivered(orderId, partnerId) {
   const delivery = await deliveryRepository.findByOrderId(orderId);
-  if (!delivery) throw new AppError('Delivery not found', 404);
-  await deliveryRepository.updateStatus(delivery.id, DeliveryStatus.DELIVERED);
-  if (partnerId) {
-    await deliveryPartnerRepository.updateStatus(partnerId, DeliveryPartnerStatus.AVAILABLE);
+  if (!delivery || delivery.partner_id !== partnerId) {
+    throw new AppError('Delivery not found for this partner', 404);
   }
+  await deliveryRepository.updateStatus(delivery.id, DeliveryStatus.DELIVERED);
+  await deliveryPartnerRepository.updateStatus(partnerId, DeliveryPartnerStatus.AVAILABLE);
   return delivery;
 }
 

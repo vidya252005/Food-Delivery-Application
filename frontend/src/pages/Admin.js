@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { adminAPI } from '../utils/api';
+import { parseUserAuthResponse } from '../utils/authResponse';
 import QualityBadges from '../components/QualityBadges';
 import './Admin.css';
 
@@ -52,10 +53,8 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       const res = await adminAPI.login({ email, password });
-      localStorage.setItem('token', res.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
-      localStorage.setItem('role', 'admin');
-      login(res.data.user, res.token, 'admin');
+      const { user, token, role } = parseUserAuthResponse(res);
+      login(user, token, role);
       await loadPending();
     } catch (err) {
       setError(err.message);

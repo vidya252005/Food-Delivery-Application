@@ -1,4 +1,5 @@
 const { pool } = require('../config/db');
+const selectEligibilityService = require('../services/selectEligibilityService');
 
 async function findByEmail(email, client = pool) {
   const { rows } = await client.query(
@@ -88,18 +89,23 @@ async function findNearby(lat, lng, radiusKm = 15, client = pool) {
  * this pass focuses on).
  */
 async function search(term, client = pool) {
-  const pattern = `%${term}%`;
+  const pattern = `${term}%`;
   const { rows } = await client.query(
-    `SELECT * FROM (
-       SELECT DISTINCT ${RESTAURANT_COLS}, ${QUALITY_COLS}
-       ${RESTAURANT_FROM}
-       LEFT JOIN menu_items mi ON mi.restaurant_id = r.id
-       WHERE r.is_active = true AND (
-         r.name ILIKE $1 OR $2 = ANY(r.cuisine) OR mi.name ILIKE $1
+    `SELECT ${RESTAURANT_COLS}, ${QUALITY_COLS}
+     ${RESTAURANT_FROM}
+     WHERE r.is_active = true AND (
+       r.name ILIKE $1
+       OR EXISTS (
+         SELECT 1 FROM unnest(r.cuisine) AS cuisine_tag(tag)
+         WHERE tag ILIKE $1
        )
-     ) matched
-     ORDER BY COALESCE(qp_overall_score, 0) DESC, name`,
-    [pattern, term]
+       OR EXISTS (
+         SELECT 1 FROM menu_items mi
+         WHERE mi.restaurant_id = r.id AND mi.name ILIKE $1
+       )
+     )
+     ORDER BY COALESCE(qp.overall_score, 0) DESC, r.name`,
+    [pattern]
   );
   return rows;
 }
@@ -158,8 +164,7 @@ async function discover(filters = {}, client = pool) {
   }
 
   if (selectOnly) {
-    conditions.push(`r.verification_status = 'verified'`);
-    conditions.push(`COALESCE(qp.overall_score, 0) >= 90`);
+    i = selectEligibilityService.appendSelectEligibleSqlConditions(conditions, values, i);
   }
 
   if (dietaryTags.length > 0) {
@@ -211,12 +216,13 @@ async function findSelectEligible(lat, lng, radiusKm = 15, client = pool) {
   }, client);
 }
 
-async function create({ name, email, passwordHash, phone, cuisine, address }, client = pool) {
+async function create({ name, email, passwordHash, phone, cuisine, address, latitude, longitude }, client = pool) {
   const { rows } = await client.query(
-    `INSERT INTO restaurants (name, email, password_hash, phone, cuisine, street, city, state, zip_code)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    `INSERT INTO restaurants (name, email, password_hash, phone, cuisine, street, city, state, zip_code, latitude, longitude)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
      RETURNING id, name, email, cuisine, street, city, state, zip_code, phone,
-               image, delivery_time, min_order, rating, is_active, created_at, updated_at`,
+               image, delivery_time, min_order, rating, is_active, latitude, longitude,
+               description, verification_status, supported_dietary_tags, created_at, updated_at`,
     [
       name,
       email,
@@ -227,9 +233,21 @@ async function create({ name, email, passwordHash, phone, cuisine, address }, cl
       address?.city || null,
       address?.state || null,
       address?.zipCode || null,
+      latitude ?? null,
+      longitude ?? null,
     ]
   );
   return rows[0];
+}
+
+async function createQualityProfile(restaurantId, client = pool) {
+  await client.query(
+    `INSERT INTO quality_profiles
+       (restaurant_id, overall_score, ingredient_score, transparency_score, food_safety_score, consistency_score, badges)
+     VALUES ($1, 0, 0, 0, 0, 0, $2)
+     ON CONFLICT (restaurant_id) DO NOTHING`,
+    [restaurantId, ['pending_onboarding']]
+  );
 }
 
 /** Dynamic partial update - only touches columns actually present in `fields`. */
@@ -242,6 +260,10 @@ async function updateProfile(id, fields, client = pool) {
     deliveryTime: 'delivery_time',
     minOrder: 'min_order',
     isActive: 'is_active',
+    description: 'description',
+    supportedDietaryTags: 'supported_dietary_tags',
+    latitude: 'latitude',
+    longitude: 'longitude',
   };
   const addressColumnMap = { street: 'street', city: 'city', state: 'state', zipCode: 'zip_code' };
 
@@ -254,6 +276,10 @@ async function updateProfile(id, fields, client = pool) {
       sets.push(`${column} = $${i++}`);
       values.push(fields[key]);
     }
+  }
+  if (fields.supported_dietary_tags !== undefined) {
+    sets.push(`supported_dietary_tags = $${i++}`);
+    values.push(fields.supported_dietary_tags);
   }
   if (fields.address) {
     for (const [key, column] of Object.entries(addressColumnMap)) {
@@ -269,13 +295,11 @@ async function updateProfile(id, fields, client = pool) {
   sets.push(`updated_at = now()`);
   values.push(id);
 
-  const { rows } = await client.query(
-    `UPDATE restaurants SET ${sets.join(', ')} WHERE id = $${i}
-     RETURNING id, name, email, cuisine, street, city, state, zip_code, phone,
-               image, delivery_time, min_order, rating, is_active, created_at, updated_at`,
+  await client.query(
+    `UPDATE restaurants SET ${sets.join(', ')} WHERE id = $${i}`,
     values
   );
-  return rows[0] || null;
+  return findById(id, client);
 }
 
 async function addMenuItem(restaurantId, item, client = pool) {
@@ -346,7 +370,8 @@ async function deleteMenuItem(restaurantId, menuItemId, client = pool) {
 async function findMenuItemsByIds(ids, client = pool) {
   if (!ids?.length) return new Map();
   const { rows } = await client.query(
-    `SELECT id, calories, protein_g, carbs_g, fat_g, sugar_g, fiber_g, dietary_tags, allergens
+    `SELECT id, restaurant_id, name, price, available,
+            calories, protein_g, carbs_g, fat_g, sugar_g, fiber_g, dietary_tags, allergens
      FROM menu_items WHERE id = ANY($1::uuid[])`,
     [ids]
   );
@@ -363,6 +388,7 @@ module.exports = {
   discover,
   findSelectEligible,
   create,
+  createQualityProfile,
   updateProfile,
   addMenuItem,
   updateMenuItem,

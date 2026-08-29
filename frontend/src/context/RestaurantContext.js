@@ -25,6 +25,8 @@ export function RestaurantProvider({ children }) {
   }, []);
 
   const login = (restaurantData, token) => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     localStorage.setItem('restaurantToken', token);
     localStorage.setItem('restaurant', JSON.stringify(restaurantData));
     localStorage.setItem('role', 'restaurant');
@@ -50,7 +52,12 @@ export function RestaurantProvider({ children }) {
 
   return (
     <RestaurantContext.Provider value={{
-      restaurant, isLoggedIn, login, logout, updateRestaurant,
+      restaurant,
+      isLoggedIn,
+      isRestaurantLoggedIn: isLoggedIn,
+      login,
+      logout,
+      updateRestaurant,
       updateRestaurantData: updateRestaurant,
       restaurantLogout: logout,
       loading,

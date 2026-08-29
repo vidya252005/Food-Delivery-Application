@@ -12,29 +12,29 @@ const listAvailable = asyncHandler(async (req, res) => {
 });
 
 const setAvailability = asyncHandler(async (req, res) => {
-  const { partnerId, status } = req.body;
-  const updated = await deliveryPartnerRepository.updateStatus(partnerId, status);
+  const { status } = req.body;
+  const updated = await deliveryPartnerRepository.updateStatus(req.partnerId, status);
   if (!updated) throw new AppError('Partner not found', 404);
   res.json(updated);
 });
 
 const updateLocation = asyncHandler(async (req, res) => {
-  const { partnerId, lat, lng } = req.body;
-  const updated = await deliveryPartnerRepository.updateLocation(partnerId, lat, lng);
+  const { lat, lng } = req.body;
+  const updated = await deliveryPartnerRepository.updateLocation(req.partnerId, lat, lng);
   if (!updated) throw new AppError('Partner not found', 404);
   res.json(updated);
 });
 
 const pickUp = asyncHandler(async (req, res) => {
-  const { orderId, partnerId } = req.body;
-  await deliveryService.markPickedUp(orderId, partnerId);
+  const { orderId } = req.body;
+  await deliveryService.markPickedUp(orderId, req.partnerId);
   await orderService.transition(orderId, OrderStatus.OUT_FOR_DELIVERY);
   res.json(await orderService.getById(orderId));
 });
 
 const completeDelivery = asyncHandler(async (req, res) => {
-  const { orderId, partnerId } = req.body;
-  await deliveryService.markDelivered(orderId, partnerId);
+  const { orderId } = req.body;
+  await deliveryService.markDelivered(orderId, req.partnerId);
   res.json(await orderService.transition(orderId, OrderStatus.DELIVERED));
 });
 

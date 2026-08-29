@@ -265,6 +265,76 @@
   border: 1px solid #E8C4C3;
 }
 
+.select-payment-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.select-payment-modal {
+  background: var(--surface, #fff);
+  border-radius: var(--radius-lg, 12px);
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow-card);
+}
+
+.select-payment-modal h2 {
+  margin: 0 0 0.25rem;
+}
+
+.select-payment-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--brand-dark);
+  margin: 0 0 1.25rem;
+}
+
+.select-payment-methods {
+  display: flex;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.select-payment-methods label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+}
+
+.select-payment-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.select-payment-fields input {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+}
+
+.select-payment-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.select-payment-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
 @media (max-width: 860px) {
   .select-split {
     grid-template-columns: 1fr;

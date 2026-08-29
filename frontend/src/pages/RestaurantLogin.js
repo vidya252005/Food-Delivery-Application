@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useRestaurant } from '../context/RestaurantContext';
+import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../utils/api';
+import { getPostAuthPath } from '../utils/authRedirect';
+import { parseRestaurantAuthResponse } from '../utils/authResponse';
 import './RestaurantLogin.css';
 
 function RestaurantLogin() {
@@ -11,13 +14,16 @@ function RestaurantLogin() {
   const [loading, setLoading] = useState(false);
 
   const { login, isLoggedIn } = useRestaurant();
+  const { logout: userLogout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = getPostAuthPath(location, '/restaurant/dashboard');
 
   useEffect(() => {
-    if (isLoggedIn && window.location.pathname === '/restaurant-login') {
-      navigate('/restaurant/dashboard');
+    if (isLoggedIn) {
+      navigate(redirectTo, { replace: true });
     }
-  }, [isLoggedIn, navigate]);
+  }, [isLoggedIn, navigate, redirectTo]);
   
   
 
@@ -28,14 +34,13 @@ function RestaurantLogin() {
     setError('');
     setLoading(true);
     try {
-      const data = await authAPI.restaurantLogin({ email, password });
-      const token = data.token ?? data.data?.token;
-      const restaurant = data.data?.restaurant ?? data.restaurant;
-      if (!restaurant || !token) throw new Error('Invalid response from server');
+      const response = await authAPI.restaurantLogin({ email, password });
+      const { restaurant, token } = parseRestaurantAuthResponse(response);
       login(restaurant, token);
-      
+      userLogout();
+
       alert('Login successful!');
-      navigate('/restaurant/dashboard', { replace: true });
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       console.error('Restaurant login error:', err);
       setError(err.message || 'Login failed. Please check your credentials.');

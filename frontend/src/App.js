@@ -38,14 +38,17 @@ function NavbarSwitcher() {
   const path = useLocation().pathname;
   const { role: userRole, isLoggedIn: userLoggedIn } = useAuth();
   const { isLoggedIn: restaurantLoggedIn } = useRestaurant();
+  const storedRole = typeof window !== 'undefined' ? localStorage.getItem('role') : null;
 
   if (path === '/login' || path === '/signup' ||
       path === '/restaurant-login' || path === '/restaurant-signup' || path === '/admin') return null;
 
-  if (restaurantLoggedIn) return <RestaurantNavbar />;
-  if (userLoggedIn && userRole === 'user') return <UserNavbar />;
+  if (path === '/' || path === '/home') return null;
 
-  const isRestaurantPortal = ['/restaurant/dashboard', '/restaurant/menu', '/restaurant/orders', '/restaurant/profile']
+  if (storedRole === 'restaurant' && restaurantLoggedIn) return <RestaurantNavbar />;
+  if (userLoggedIn && (userRole === 'user' || userRole === 'admin')) return <UserNavbar />;
+
+  const isRestaurantPortal = ['/restaurant/dashboard', '/restaurant/menu', '/restaurant/orders', '/restaurant/profile', '/restaurant/verification']
     .some((p) => path.startsWith(p));
   if (isRestaurantPortal) return <RestaurantNavbar />;
   return <UserNavbar />;

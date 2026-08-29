@@ -2,15 +2,17 @@ const orderService = require('../services/orderService');
 const paymentService = require('../services/paymentService');
 const asyncHandler = require('../utils/asyncHandler');
 const AppError = require('../utils/AppError');
+const { OrderStatus } = require('../domain/enums');
+const { pickPaymentRequest } = require('../utils/sanitize');
 
 const create = asyncHandler(async (req, res) => {
-  const order = await orderService.create(req.body);
+  const order = await orderService.create({ ...req.body, user: req.userId });
   res.status(201).json(order);
 });
 
 const placeOrder = asyncHandler(async (req, res) => {
   const { cart, payment } = req.body;
-  const order = await orderService.placeOrder(cart, payment);
+  const order = await orderService.placeOrder({ ...cart, user: req.userId }, pickPaymentRequest(payment));
   res.status(201).json(order);
 });
 
@@ -35,10 +37,19 @@ const updateStatus = asyncHandler(async (req, res) => {
 const pay = asyncHandler(async (req, res) => {
   const order = await orderService.getById(req.params.id);
   if (!order) throw new AppError('Order not found', 404);
+  if (order.status !== OrderStatus.PAYMENT_PENDING) {
+    throw new AppError('Order is not awaiting payment', 409);
+  }
 
-  const result = await paymentService.pay(order.id, order.totalAmount, req.body);
+  const existingPayment = await paymentService.getForOrder(order.id);
+  if (existingPayment?.success) {
+    throw new AppError('Order already paid', 409);
+  }
+
+  const paymentRequest = pickPaymentRequest(req.body);
+  const result = await paymentService.pay(order.id, order.totalAmount, paymentRequest);
   if (result.success) {
-    await orderService.transition(req.params.id, 'confirmed');
+    await orderService.transition(req.params.id, OrderStatus.CONFIRMED);
   }
   res.json({ payment: result, order: await orderService.getById(req.params.id) });
 });

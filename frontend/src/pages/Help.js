@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { supportAPI } from '../utils/api';
 import './Help.css';
 
 function Help() {
@@ -18,13 +19,7 @@ function Help() {
     setStatus('');
 
     try {
-      const response = await fetch('http://localhost:5001/api/support', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) throw new Error('Failed to send message');
+      await supportAPI.create(formData);
       setStatus('✅ Your message has been sent. Our team will get back to you soon!');
       setFormData({ name: '', email: '', issue: '' });
     } catch (err) {

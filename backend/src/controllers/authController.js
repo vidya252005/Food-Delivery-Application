@@ -3,7 +3,7 @@ const asyncHandler = require('../utils/asyncHandler');
 
 const registerUser = asyncHandler(async (req, res) => {
   const { token, user } = await authService.registerUser(req.body);
-  res.status(201).json({ status: 'success', token, data: { role: 'user', user } });
+  res.status(201).json({ status: 'success', token, data: { role: user.role, user } });
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -26,10 +26,17 @@ const loginRestaurant = asyncHandler(async (req, res) => {
   res.json({ status: 'success', token, data: { role: 'restaurant', restaurant } });
 });
 
+const loginDeliveryPartner = asyncHandler(async (req, res) => {
+  const { token, partner } = await authService.loginDeliveryPartner(req.body);
+  res.json({ status: 'success', token, data: { role: 'delivery_partner', partner } });
+});
+
 const googleLogin = asyncHandler(async (req, res) => {
   const oauthService = require('../services/oauthService');
   const { token, user } = await oauthService.loginWithGoogle(req.body.credential);
   res.json({ status: 'success', token, data: { role: 'user', user } });
 });
 
-module.exports = { registerUser, loginUser, loginAdmin, registerRestaurant, loginRestaurant, googleLogin };
+module.exports = {
+  registerUser, loginUser, loginAdmin, registerRestaurant, loginRestaurant, loginDeliveryPartner, googleLogin,
+};

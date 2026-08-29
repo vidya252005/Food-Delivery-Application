@@ -1,8 +1,14 @@
 const membershipRepository = require('../repositories/membershipRepository');
 const restaurantRepository = require('../repositories/restaurantRepository');
+const paymentRepository = require('../repositories/paymentRepository');
+const { getPaymentStrategy } = require('../strategies/payment/PaymentStrategyFactory');
 const { mapRestaurant } = require('../utils/mappers');
-const selectEligibilityService = require('./selectEligibilityService');
-const { MembershipTier } = require('../domain/enums');
+const Money = require('../domain/money');
+const AppError = require('../utils/AppError');
+const { pickPaymentRequest } = require('../utils/sanitize');
+const { MembershipTier, PaymentMethod, PaymentStatus } = require('../domain/enums');
+
+const SELECT_MONTHLY_PRICE_RUPEES = 99;
 
 const SELECT_BENEFITS = [
   { id: 'free_delivery', title: 'Free delivery', description: 'No delivery fee on every order' },
@@ -28,7 +34,50 @@ async function getMembership(userId) {
   return mapMembership(row);
 }
 
-async function subscribe(userId) {
+async function chargeSelectSubscription(userId, paymentRequest) {
+  const payload = pickPaymentRequest(paymentRequest);
+  if (!payload.idempotencyKey || !payload.method) {
+    throw new AppError('Payment method and idempotencyKey are required', 400);
+  }
+  if (payload.method === PaymentMethod.COD) {
+    throw new AppError('Select membership cannot be paid with cash on delivery', 400);
+  }
+
+  const existing = await paymentRepository.findByIdempotencyKey(payload.idempotencyKey);
+  if (existing) {
+    if (existing.status !== PaymentStatus.SUCCESS) {
+      throw new AppError('Payment failed', 402);
+    }
+    return existing;
+  }
+
+  const money = Money.fromRupees(SELECT_MONTHLY_PRICE_RUPEES);
+  const strategy = getPaymentStrategy(payload.method);
+  const payment = await paymentRepository.create({
+    orderId: null,
+    amountPaise: money.amountPaise,
+    method: payload.method,
+    status: PaymentStatus.INITIATED,
+    idempotencyKey: payload.idempotencyKey,
+  });
+
+  try {
+    const result = await strategy.pay(`membership_${userId}`, money, payload);
+    if (!result.success) {
+      await paymentRepository.updateStatus(payment.id, PaymentStatus.FAILED);
+      throw new AppError(result.message || 'Payment failed', 402);
+    }
+    return paymentRepository.updateStatus(payment.id, PaymentStatus.SUCCESS, result.transactionId);
+  } catch (err) {
+    if (!(err instanceof AppError)) {
+      await paymentRepository.updateStatus(payment.id, PaymentStatus.FAILED);
+    }
+    throw err;
+  }
+}
+
+async function subscribe(userId, paymentRequest) {
+  await chargeSelectSubscription(userId, paymentRequest);
   const row = await membershipRepository.subscribe(userId, MembershipTier.SELECT);
   return mapMembership(row);
 }
@@ -64,4 +113,5 @@ module.exports = {
   isSelectMember,
   mapMembership,
   SELECT_BENEFITS,
+  SELECT_MONTHLY_PRICE_RUPEES,
 };

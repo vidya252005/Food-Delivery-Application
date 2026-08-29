@@ -1,6 +1,7 @@
 const request = require('supertest');
 const app = require('../../src/app');
 const { resetDb, closeDb } = require('../setup/db');
+const { advanceOrderLifecycle } = require('../helpers/lifecycle');
 
 beforeEach(async () => {
   await resetDb();
@@ -79,20 +80,7 @@ test('full order lifecycle: restaurant onboarding through delivery and feedback'
   expect(restaurantOrders.body.map((o) => o.id)).toContain(orderId);
 
   // 8. Order moves through its full lifecycle.
-  for (const status of [
-    'confirmed',
-    'restaurant_accepted',
-    'preparing',
-    'ready_for_pickup',
-    'out_for_delivery',
-    'delivered',
-  ]) {
-    const res = await request(app)
-      .patch(`/api/orders/${orderId}/status`)
-      .set('Authorization', `Bearer ${restaurantToken}`)
-      .send({ status });
-    expect(res.status).toBe(200);
-  }
+  await advanceOrderLifecycle(request, app, orderId, restaurantToken);
 
   // 9. Customer leaves feedback.
   const feedbackRes = await request(app).post('/api/feedback').send({

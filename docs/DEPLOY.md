@@ -39,11 +39,14 @@ Render **Shell** is not available on the free tier. Use either method below.
 
 ```bash
 cd backend
-npm ci
-DATABASE_URL='postgresql://USER:PASS@HOST/food_delivery' node scripts/seed.js
+NODE_ENV=development DATABASE_URL='postgresql://USER:PASSWORD@dpg-xxxxx-a.oregon-postgres.render.com/food_delivery' node scripts/seed.js
 ```
 
-Replace with your full External Database URL from Render (wrap in quotes).
+**Important:** use the **External Database URL** from Render, not the dashboard link.
+
+- Render → **foodclub-db** → **Info** or **Connections**
+- Copy **External Database URL** — it starts with `postgresql://` and the host looks like `dpg-xxxxx-a.oregon-postgres.render.com`
+- Do **not** use `https://dashboard.render.com/d/...` (that is a web page, not the database)
 
 3. Verify:
 

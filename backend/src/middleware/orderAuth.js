@@ -98,14 +98,16 @@ async function authorizeOrderParticipant(req, res, next) {
   }
 }
 
-/** POST /orders — body.user must match authenticated user. */
+/** POST /orders — always bind order to the authenticated user (ignore client body.user). */
 function assertOrderForAuthenticatedUser(req, res, next) {
-  const cartUser = req.body?.user || req.body?.cart?.user;
-  if (cartUser && cartUser !== req.userId) {
+  if (req.body?.user && req.body.user !== req.userId) {
     return res.status(403).json({ message: 'Forbidden — cannot place an order for another user' });
   }
-  if (req.body && !req.body.user) req.body.user = req.userId;
-  if (req.body?.cart && !req.body.cart.user) req.body.cart.user = req.userId;
+  if (req.body?.cart?.user && req.body.cart.user !== req.userId) {
+    return res.status(403).json({ message: 'Forbidden — cannot place an order for another user' });
+  }
+  if (req.body) req.body.user = req.userId;
+  if (req.body?.cart) req.body.cart.user = req.userId;
   return next();
 }
 

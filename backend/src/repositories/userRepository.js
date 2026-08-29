@@ -36,20 +36,20 @@ async function findById(id, client = pool) {
   return rows[0] || null;
 }
 
-async function create({ name, email, passwordHash, phone }, client = pool) {
+async function create({ name, email, passwordHash, phone, role = 'user' }, client = pool) {
   const { rows } = await client.query(
-    `INSERT INTO users (name, email, password_hash, phone)
-     VALUES ($1, $2, $3, $4)
+    `INSERT INTO users (name, email, password_hash, phone, role)
+     VALUES ($1, $2, $3, $4, $5)
      RETURNING ${USER_COLS}`,
-    [name, email, passwordHash, phone || null]
+    [name, email, passwordHash, phone || null, role]
   );
   return rows[0];
 }
 
 async function createOAuthUser({ name, email, googleId, avatarUrl }, client = pool) {
   const { rows } = await client.query(
-    `INSERT INTO users (name, email, google_id, avatar_url, city, state)
-     VALUES ($1, $2, $3, $4, 'Bengaluru', 'Karnataka')
+    `INSERT INTO users (name, email, google_id, avatar_url, city, state, role)
+     VALUES ($1, $2, $3, $4, 'Bengaluru', 'Karnataka', 'user')
      RETURNING ${USER_COLS}`,
     [name, email, googleId, avatarUrl || null]
   );

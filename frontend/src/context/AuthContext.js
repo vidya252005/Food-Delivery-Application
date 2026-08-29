@@ -27,19 +27,23 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = (userData, token, userRole = 'user') => {
+  const login = (userData, token, userRole) => {
+    const role = userRole ?? userData?.role ?? 'user';
+    localStorage.removeItem('restaurantToken');
+    localStorage.removeItem('restaurant');
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('role', userRole);
+    localStorage.setItem('role', role);
     setUser(userData);
     setIsLoggedIn(true);
-    setRole(userRole);
+    setRole(role);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    if (localStorage.getItem('role') === 'user') {
+    const currentRole = localStorage.getItem('role');
+    if (currentRole === 'user' || currentRole === 'admin') {
       localStorage.removeItem('role');
     }
     setUser(null);

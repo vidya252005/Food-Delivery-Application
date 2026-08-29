@@ -1,42 +1,43 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useRestaurant } from '../context/RestaurantContext';
+import { loginPathWithRedirect, restaurantLoginPathWithRedirect } from '../utils/authRedirect';
 
 export default function RoleRoute({ role, children }) {
-  // Extract both user and restaurant login states + loading
+  const location = useLocation();
+  const returnPath = `${location.pathname}${location.search}`;
+
   const { isLoggedIn: userIn, role: userRole, loading: userLoading } = useAuth();
   const { isLoggedIn: restIn, loading: restLoading } = useRestaurant();
 
-  // 🧩 Wait until both contexts finish loading before making redirect decisions
   if (userLoading || restLoading) {
-    return <div className="loading">Loading...</div>; // optional spinner or null
+    return <div className="loading">Loading...</div>;
   }
 
-  // Protect admin routes
   if (role === 'admin') {
     if (!userIn || userRole !== 'admin') {
+      return <Navigate to="/admin" replace state={{ from: returnPath }} />;
+    }
+    return children;
+  }
+
+  if (role === 'user') {
+    if (userIn && userRole === 'admin') {
       return <Navigate to="/admin" replace />;
     }
-    return children;
-  }
-
-  // Protect user routes (not admin)
-  if (role === 'user') {
     if (!userIn || userRole !== 'user') {
-      return <Navigate to="/login" replace />;
+      return <Navigate to={loginPathWithRedirect(returnPath)} replace />;
     }
     return children;
   }
 
-  // ✅ Protect restaurant routes
   if (role === 'restaurant') {
     if (!restIn) {
-      return <Navigate to="/restaurant-login" replace />;
+      return <Navigate to={restaurantLoginPathWithRedirect(returnPath)} replace />;
     }
     return children;
   }
 
-  // ✅ Default fallback
   return <Navigate to="/" replace />;
 }

@@ -1,20 +1,18 @@
 // src/utils/api.js
 import axios from 'axios';
 
-// ================================
-// 🔧 Axios Configuration
-// ================================
 export const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5001/api',
   headers: { 'Content-Type': 'application/json' },
 });
 
-// ✅ Attach restaurant token (or user token) automatically
+/** Attach JWT for the active session role (not "restaurant wins" blindly). */
 api.interceptors.request.use((req) => {
+  const role = localStorage.getItem('role');
   const restaurantToken = localStorage.getItem('restaurantToken');
   const userToken = localStorage.getItem('token');
 
-  if (restaurantToken) {
+  if (role === 'restaurant' && restaurantToken) {
     req.headers.Authorization = `Bearer ${restaurantToken}`;
   } else if (userToken) {
     req.headers.Authorization = `Bearer ${userToken}`;
@@ -22,47 +20,6 @@ api.interceptors.request.use((req) => {
 
   return req;
 });
-
-
-// ================================
-// 🍽️ Restaurant API
-// ================================
-export const restaurantAPI = {
-  getAll: async () => (await api.get('/restaurants')).data,
-
-  getNearby: (lat, lng, radius = 15) =>
-    wrap(() => api.get('/restaurants/nearby', { params: { lat, lng, radius } }).then((r) => r.data)),
-
-  getById: async (id) => (await api.get(`/restaurants/${id}`)).data,
-
-  search: async (query) => (await api.get(`/restaurants/search/${query}`)).data,
-
-  discover: (params) =>
-    wrap(() => api.get('/restaurants/discover', { params }).then((r) => r.data)),
-
-  update: async (id, data) =>
-    (await api.put(`/restaurants/${id}`, data)).data,
-
-  getStats: async () => (await api.get('/restaurant/stats')).data,
-
-  addMenuItem: async (menuItem) =>
-    (await api.post('/restaurant/menu', menuItem)).data,
-
-  updateMenuItem: async (menuItemId, menuItem) =>
-    (await api.put(`/restaurant/menu/${menuItemId}`, menuItem)).data,
-
-  deleteMenuItem: async (menuItemId) =>
-    (await api.delete(`/restaurant/menu/${menuItemId}`)).data,
-
-  getProfile: () =>
-    wrap(() => api.get('/restaurant/profile').then((r) => r.data)),
-
-  getVerificationStatus: () =>
-    wrap(() => api.get('/restaurant/verification').then((r) => r.data)),
-
-  submitVerification: (data) =>
-    wrap(() => api.post('/restaurant/verification', data).then((r) => r.data)),
-};
 
 const apiError = (err) => {
   const message =
@@ -76,6 +33,48 @@ const apiError = (err) => {
 const wrap = (fn) => fn().catch((err) => {
   throw apiError(err);
 });
+
+export const restaurantAPI = {
+  getAll: () => wrap(() => api.get('/restaurants').then((r) => r.data)),
+
+  getNearby: (lat, lng, radius = 15) =>
+    wrap(() => api.get('/restaurants/nearby', { params: { lat, lng, radius } }).then((r) => r.data)),
+
+  getById: (id) => wrap(() => api.get(`/restaurants/${id}`).then((r) => r.data)),
+
+  search: (query) => wrap(() => api.get(`/restaurants/search/${encodeURIComponent(query)}`).then((r) => r.data)),
+
+  discover: (params) =>
+    wrap(() => api.get('/restaurants/discover', { params }).then((r) => r.data)),
+
+  getOwnMenu: () =>
+    wrap(() => api.get('/restaurant/menu').then((r) => r.data)),
+
+  getStats: () => wrap(() => api.get('/restaurant/stats').then((r) => r.data)),
+
+  getOwnOrders: () => wrap(() => api.get('/restaurant/orders').then((r) => r.data)),
+
+  addMenuItem: (menuItem) =>
+    wrap(() => api.post('/restaurant/menu', menuItem).then((r) => r.data)),
+
+  updateMenuItem: (menuItemId, menuItem) =>
+    wrap(() => api.put(`/restaurant/menu/${menuItemId}`, menuItem).then((r) => r.data)),
+
+  deleteMenuItem: (menuItemId) =>
+    wrap(() => api.delete(`/restaurant/menu/${menuItemId}`).then((r) => r.data)),
+
+  getProfile: () =>
+    wrap(() => api.get('/restaurant/profile').then((r) => r.data)),
+
+  updateProfile: (data) =>
+    wrap(() => api.put('/restaurant/profile', data).then((r) => r.data)),
+
+  getVerificationStatus: () =>
+    wrap(() => api.get('/restaurant/verification').then((r) => r.data)),
+
+  submitVerification: (data) =>
+    wrap(() => api.post('/restaurant/verification', data).then((r) => r.data)),
+};
 
 export const authAPI = {
   userLogin: (credentials) =>
@@ -95,9 +94,6 @@ export const authAPI = {
 };
 
 export const orderAPI = {
-  create: (orderData) =>
-    wrap(() => api.post('/orders', orderData).then((r) => r.data)),
-
   placeOrder: (cart, payment) =>
     wrap(() => api.post('/orders/place', { cart, payment }).then((r) => r.data)),
 
@@ -151,8 +147,8 @@ export const foodclubAPI = {
   getMembership: () =>
     wrap(() => api.get('/v1/select').then((r) => r.data)),
 
-  subscribe: () =>
-    wrap(() => api.post('/v1/select/subscribe', {}).then((r) => r.data)),
+  subscribe: (payment) =>
+    wrap(() => api.post('/v1/select/subscribe', payment).then((r) => r.data)),
 
   cancelMembership: () =>
     wrap(() => api.post('/v1/select/cancel', {}).then((r) => r.data)),
@@ -181,3 +177,15 @@ export const adminAPI = {
     wrap(() => api.post(`/v1/admin/restaurants/${id}/reject`, { reviewNotes }).then((r) => r.data)),
 };
 
+export const feedbackAPI = {
+  create: (payload) =>
+    wrap(() => api.post('/feedback', payload).then((r) => r.data)),
+
+  getForOrder: (orderId) =>
+    wrap(() => api.get(`/feedback/order/${orderId}`).then((r) => r.data)),
+};
+
+export const supportAPI = {
+  create: (payload) =>
+    wrap(() => api.post('/support', payload).then((r) => r.data)),
+};

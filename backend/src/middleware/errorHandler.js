@@ -1,3 +1,5 @@
+const { sanitizeForLog } = require('../utils/sanitize');
+
 /**
  * Maps a handful of common Postgres error codes to a client-safe message
  * and status, so a constraint violation doesn't leak as a raw 500 with
@@ -24,7 +26,7 @@ function errorHandler(err, req, res, next) {
 
   const status = err.statusCode || err.status || 500;
   if (status >= 500) {
-    console.error('Error:', err);
+    console.error('Error:', err.message, sanitizeForLog({ path: req.path, method: req.method }));
   } else {
     console.error('Error:', err.message);
   }

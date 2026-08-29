@@ -12,6 +12,9 @@ async function pay(orderId, amountRupees, { method, idempotencyKey, ...request }
   if (!idempotencyKey) {
     throw new AppError('idempotencyKey is required for payment', 400);
   }
+  if (request.amount != null && Number(request.amount) !== Number(amountRupees)) {
+    throw new AppError('Payment amount does not match order total', 400);
+  }
 
   const existing = await paymentRepository.findByIdempotencyKey(idempotencyKey);
   if (existing) {

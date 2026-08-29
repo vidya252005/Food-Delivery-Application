@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useRestaurant } from '../context/RestaurantContext';
+import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../utils/api';
+import { parseRestaurantAuthResponse } from '../utils/authResponse';
 import './RestaurantSignup.css';
 
 function RestaurantSignup() {
@@ -20,7 +22,8 @@ function RestaurantSignup() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { RestaurantLogin } = useRestaurant();
+  const { login } = useRestaurant();
+  const { logout: userLogout } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -69,12 +72,10 @@ function RestaurantSignup() {
         },
       };
 
-      console.log('Registering restaurant:', restaurantData);
       const response = await authAPI.restaurantRegister(restaurantData);
-      console.log('Restaurant registration response:', response);
-      
-      // Automatically login after registration
-      RestaurantLogin(response.data.restaurant, response.token);
+      const { restaurant, token } = parseRestaurantAuthResponse(response);
+      login(restaurant, token);
+      userLogout();
       
       alert('Registration successful! Welcome to FoodClub!');
       navigate('/restaurant/dashboard');

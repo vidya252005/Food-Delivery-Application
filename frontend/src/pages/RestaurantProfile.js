@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRestaurant } from '../context/RestaurantContext';
+import { restaurantAPI } from '../utils/api';
+import { formatPrice } from '../utils/format';
 import './RestaurantProfile.css';
 
+function formatAddressForDisplay(address) {
+  if (!address) return '';
+  if (typeof address === 'string') return address;
+  return [address.street, address.city, address.state, address.zipCode]
+    .filter(Boolean)
+    .join(', ');
+}
+
 const RestaurantProfile = () => {
-  console.log("✅ Rendering RestaurantProfile");
   const { restaurant, isLoggedIn: isRestaurantLoggedIn, updateRestaurantData, restaurantLogout } = useRestaurant();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -32,7 +41,7 @@ const RestaurantProfile = () => {
         name: restaurant.name || '',
         email: restaurant.email || '',
         phone: restaurant.phone || '',
-        address: restaurant.address || '',
+        address: formatAddressForDisplay(restaurant.address),
         cuisine: restaurant.cuisine || '',
         description: restaurant.description || '',
         image: restaurant.image || '',
@@ -64,28 +73,12 @@ const RestaurantProfile = () => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('restaurantToken');
-      const response = await fetch('http://localhost:5001/api/restaurant/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        const updatedData = await response.json();
-        updateRestaurantData(updatedData);
-        alert('Profile updated successfully!');
-      } else {
-        alert('Failed to update profile');
-      }
+      const updatedData = await restaurantAPI.updateProfile(formData);
+      updateRestaurantData(updatedData);
+      alert('Profile updated successfully!');
     } catch (error) {
       console.error('Error updating profile:', error);
-      // Update locally for demo
-      updateRestaurantData(formData);
-      alert('Profile updated successfully!');
+      alert('Failed to update profile');
     } finally {
       setLoading(false);
     }
@@ -128,7 +121,7 @@ const RestaurantProfile = () => {
                 </div>
                 <div className="stat">
                   <span className="stat-label">💰 Min Order</span>
-                  <span className="stat-value">${formData.minOrder || '10'}</span>
+                  <span className="stat-value">{formatPrice(formData.minOrder || 0)}</span>
                 </div>
               </div>
             </div>
@@ -243,7 +236,7 @@ const RestaurantProfile = () => {
                   </div>
 
                   <div className="form-group">
-                    <label>Minimum Order ($)</label>
+                    <label>Minimum Order (₹)</label>
                     <input
                       type="number"
                       step="0.01"

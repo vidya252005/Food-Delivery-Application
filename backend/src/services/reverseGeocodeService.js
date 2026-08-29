@@ -110,4 +110,5 @@ module.exports = {
   reverseGeocode,
   nearestBengaluruArea,
   buildAreaLabel,
+  BENGALURU_AREAS,
 };

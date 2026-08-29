@@ -31,9 +31,25 @@ function getEligibilityDetails(restaurant) {
   }));
 }
 
+/**
+ * Append parameterized SQL WHERE clauses mirroring eligibilityRules.
+ * Keeps discover/list queries aligned with isSelectEligible().
+ */
+function appendSelectEligibleSqlConditions(conditions, values, startIndex, opts = {}) {
+  const restaurantAlias = opts.restaurantAlias || 'r';
+  const qualityAlias = opts.qualityAlias || 'qp';
+  let i = startIndex;
+  conditions.push(`${restaurantAlias}.verification_status = $${i++}`);
+  values.push(VerificationStatus.VERIFIED);
+  conditions.push(`COALESCE(${qualityAlias}.overall_score, 0) >= $${i++}`);
+  values.push(MIN_SELECT_QUALITY_SCORE);
+  return i;
+}
+
 module.exports = {
   isSelectEligible,
   getEligibilityDetails,
+  appendSelectEligibleSqlConditions,
   MIN_SELECT_QUALITY_SCORE,
   eligibilityRules,
 };

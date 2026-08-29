@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useRestaurant } from '../context/RestaurantContext';
 import { authAPI } from '../utils/api';
 import { getPostAuthPath } from '../utils/authRedirect';
+import { parseUserAuthResponse } from '../utils/authResponse';
 import './Signup.css';
 
 function Signup() {
@@ -17,6 +19,7 @@ function Signup() {
   const [loading, setLoading] = useState(false);
   
   const { login } = useAuth();
+  const { logout: restaurantLogout } = useRestaurant();
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo = getPostAuthPath(location);
@@ -55,12 +58,11 @@ function Signup() {
         phone: formData.phone,
       };
 
-      console.log('Registering user:', userData);
       const response = await authAPI.userRegister(userData);
-      console.log('Registration response:', response);
-      
-      // Automatically login after registration
-      login(response.data.user, response.token);
+      const { user, token, role } = parseUserAuthResponse(response);
+      login(user, token, role);
+      restaurantLogout();
+      restaurantLogout();
       navigate(redirectTo, { replace: true });
     } catch (err) {
       console.error('Registration error:', err);

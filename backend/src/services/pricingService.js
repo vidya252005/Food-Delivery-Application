@@ -5,6 +5,10 @@ const DELIVERY_FEE_RUPEES = 40;
 const SELECT_MEMBER_DISCOUNT_RATE = 0.05;
 const TAX_RATE = 0.05;
 
+/**
+ * @param {Array<{ price: number, quantity?: number }>} items
+ *   Line items with server-authoritative unit prices (never trust client-submitted prices).
+ */
 function calculateOrderTotal(items, options = {}) {
   const { isSelectMember = false } = options;
   const subtotalPaise = items.reduce(

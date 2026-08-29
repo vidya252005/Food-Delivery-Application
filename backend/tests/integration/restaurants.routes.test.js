@@ -70,6 +70,26 @@ describe('GET /api/restaurants/search/:query', () => {
     expect(res.body.map((r) => r.name)).toEqual(['Bella Napoli']);
   });
 
+  test('finds a restaurant by name', async () => {
+    await seedRestaurant({ name: 'Salad Days Koramangala' });
+    await seedRestaurant({ name: 'Spice Route' });
+
+    const res = await request(app).get('/api/restaurants/search/Salad');
+    expect(res.status).toBe(200);
+    expect(res.body.map((r) => r.name)).toEqual(['Salad Days Koramangala']);
+  });
+
+  test('finds a restaurant by menu item name without duplicate rows', async () => {
+    const restaurant = await seedRestaurant({ name: 'Green Bowl Co' });
+    await restaurantRepository.addMenuItem(restaurant.id, { name: 'Protein Power Bowl', price: 349 });
+    await seedRestaurant({ name: 'Other Place' });
+
+    const res = await request(app).get('/api/restaurants/search/Protein');
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].name).toBe('Green Bowl Co');
+  });
+
   test('is registered before /:id so "search" is never treated as an id', async () => {
     const res = await request(app).get('/api/restaurants/search/nomatch');
     expect(res.status).toBe(200);

@@ -34,7 +34,7 @@ Errors bubble up to a single `errorHandler` middleware. Controllers use `asyncHa
   - `GET /api/orders/restaurant/:restaurantId` — authenticated restaurant must match `:restaurantId`.
   - `PATCH /api/orders/:id/status` — restaurant token + order must belong to that restaurant.
   - `GET /api/orders/:id`, tracking, cancel — JWT required; caller must be the customer, the restaurant, or admin.
-- Middleware lives in `middleware/auth.js` (token parsing) and `middleware/orderAuth.js` (resource-level checks).
+- Middleware lives in `middleware/auth.js` (token parsing) and `middleware/orderAuth.js` / `middleware/deliveryAuth.js` (resource-level checks).
 
 ## Rate limiting
 

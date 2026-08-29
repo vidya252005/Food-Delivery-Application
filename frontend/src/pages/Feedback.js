@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { feedbackAPI } from '../utils/api';
 import './Feedback.css';
 
 function Feedback() {
@@ -42,22 +43,15 @@ function Feedback() {
       setSubmitting(true);
       setError('');
 
-      const response = await fetch('http://localhost:5001/api/feedback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          orderId: order._id,
-          userId: user.id,
-          restaurantId: order.restaurant?._id || order.restaurant,
-          rating: Number(formData.rating),
-          foodQuality: Number(formData.foodQuality),
-          deliverySpeed: Number(formData.deliverySpeed),
-          comment: formData.comment
-        })
+      await feedbackAPI.create({
+        orderId: order.id || order._id,
+        userId: user.id,
+        restaurantId: order.restaurant?.id || order.restaurant?._id || order.restaurant,
+        rating: Number(formData.rating),
+        foodQuality: Number(formData.foodQuality) || undefined,
+        deliverySpeed: Number(formData.deliverySpeed) || undefined,
+        comment: formData.comment,
       });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Failed to submit feedback');
 
       setSuccess(true);
       setTimeout(() => navigate('/orders'), 2000);

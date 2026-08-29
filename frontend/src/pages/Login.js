@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
+import { useRestaurant } from '../context/RestaurantContext';
 import { authAPI } from '../utils/api';
 import { isGoogleOAuthConfigured, GOOGLE_OAUTH_ORIGIN_HINT } from '../config/google';
 import { getPostAuthPath } from '../utils/authRedirect';
+import { parseUserAuthResponse } from '../utils/authResponse';
 import './Login.css';
 
 function Login() {
@@ -13,14 +15,24 @@ function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, isLoggedIn, role } = useAuth();
+  const { logout: restaurantLogout } = useRestaurant();
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo = getPostAuthPath(location);
   const googleEnabled = isGoogleOAuthConfigured();
   const fromCart = redirectTo === '/cart';
 
-  const goAfterAuth = () => navigate(redirectTo, { replace: true });
+  useEffect(() => {
+    if (isLoggedIn && role === 'user') {
+      navigate(redirectTo, { replace: true });
+    }
+  }, [isLoggedIn, role, redirectTo, navigate]);
+
+  const goAfterAuth = () => {
+    restaurantLogout();
+    navigate(redirectTo, { replace: true });
+  };
 
   const handleGoogleSuccess = async (credentialResponse) => {
     setError('');
@@ -33,7 +45,8 @@ function Login() {
     setLoading(true);
     try {
       const response = await authAPI.googleLogin(credentialResponse.credential);
-      login(response.data.user, response.token);
+      const { user, token, role } = parseUserAuthResponse(response);
+      login(user, token, role);
       goAfterAuth();
     } catch (err) {
       const msg = err.message || 'Google login failed';
@@ -51,7 +64,8 @@ function Login() {
     setLoading(true);
     try {
       const response = await authAPI.userLogin({ email, password });
-      login(response.data.user, response.token);
+      const { user, token, role } = parseUserAuthResponse(response);
+      login(user, token, role);
       goAfterAuth();
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.');

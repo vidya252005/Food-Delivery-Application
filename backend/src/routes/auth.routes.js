@@ -9,5 +9,6 @@ router.post('/admin/login', authController.loginAdmin);
 router.post('/google', authController.googleLogin);
 router.post('/restaurant/register', authController.registerRestaurant);
 router.post('/restaurant/login', authController.loginRestaurant);
+router.post('/delivery/login', authController.loginDeliveryPartner);
 
 module.exports = router;

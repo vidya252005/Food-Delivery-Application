@@ -4,6 +4,7 @@ const { resetDb, closeDb } = require('../setup/db');
 const userRepository = require('../../src/repositories/userRepository');
 const restaurantRepository = require('../../src/repositories/restaurantRepository');
 const { bearerToken } = require('../helpers/auth');
+const { advanceOrderLifecycle } = require('../helpers/lifecycle');
 
 beforeEach(async () => {
   await resetDb();
@@ -108,10 +109,67 @@ describe('POST /api/orders', () => {
       .send({
         user: '00000000-0000-0000-0000-000000000000',
         restaurant: restaurant.id,
-        items: [{ name: 'X', price: 10, quantity: 1 }],
+        items: [{ menuItem: menuItem.id, name: 'X', price: 10, quantity: 1 }],
         totalAmount: 10,
       });
     expect(res.status).toBe(403);
+  });
+
+  test('charges DB menu price when client submits a tampered price', async () => {
+    const { user, restaurant, menuItem, userToken } = await seedUserAndRestaurant();
+
+    const res = await request(app)
+      .post('/api/orders')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        user: user.id,
+        restaurant: restaurant.id,
+        items: [{
+          menuItem: menuItem.id,
+          name: 'Margherita Pizza',
+          price: 1,
+          quantity: 1,
+        }],
+        totalAmount: 1,
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.items[0].price).toBe(380);
+    // subtotal 380 + 5% tax 19 + ₹40 delivery
+    expect(Number(res.body.totalAmount)).toBe(439);
+  });
+
+  test('400s when a menu item belongs to another restaurant', async () => {
+    const a = await seedUserAndRestaurant();
+    const b = await seedUserAndRestaurant();
+
+    const res = await request(app)
+      .post('/api/orders')
+      .set('Authorization', `Bearer ${a.userToken}`)
+      .send({
+        user: a.user.id,
+        restaurant: a.restaurant.id,
+        items: [{ menuItem: b.menuItem.id, name: 'Margherita Pizza', price: 380, quantity: 1 }],
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.message).toMatch(/does not belong/i);
+  });
+
+  test('400s when cart line omits menuItem id', async () => {
+    const { user, restaurant, userToken } = await seedUserAndRestaurant();
+
+    const res = await request(app)
+      .post('/api/orders')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        user: user.id,
+        restaurant: restaurant.id,
+        items: [{ name: 'Fake item', price: 1, quantity: 1 }],
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.message).toMatch(/menu item/i);
   });
 });
 
@@ -132,23 +190,23 @@ describe('order status workflow over HTTP', () => {
 
   test('walks the full happy-path lifecycle through payment_pending → delivered', async () => {
     const { orderId, restaurantToken } = await createOrder();
-    const path = [
-      'confirmed',
-      'restaurant_accepted',
-      'preparing',
-      'ready_for_pickup',
-      'out_for_delivery',
-      'delivered',
-    ];
+    await advanceOrderLifecycle(request, app, orderId, restaurantToken);
+  });
 
-    for (const status of path) {
-      const res = await request(app)
-        .patch(`/api/orders/${orderId}/status`)
-        .set('Authorization', `Bearer ${restaurantToken}`)
-        .send({ status });
-      expect(res.status).toBe(200);
-      expect(res.body.status).toBe(status);
-    }
+  test('409s when skipping restaurant_accepted (confirmed → preparing)', async () => {
+    const { orderId, restaurantToken } = await createOrder();
+
+    await request(app)
+      .patch(`/api/orders/${orderId}/status`)
+      .set('Authorization', `Bearer ${restaurantToken}`)
+      .send({ status: 'confirmed' });
+
+    const res = await request(app)
+      .patch(`/api/orders/${orderId}/status`)
+      .set('Authorization', `Bearer ${restaurantToken}`)
+      .send({ status: 'preparing' });
+
+    expect(res.status).toBe(409);
   });
 
   test('rejects skipping straight from payment_pending to delivered with 409', async () => {
@@ -178,19 +236,7 @@ describe('order status workflow over HTTP', () => {
 
   test('rejects any transition once an order is delivered', async () => {
     const { orderId, restaurantToken } = await createOrder();
-    for (const status of [
-      'confirmed',
-      'restaurant_accepted',
-      'preparing',
-      'ready_for_pickup',
-      'out_for_delivery',
-      'delivered',
-    ]) {
-      await request(app)
-        .patch(`/api/orders/${orderId}/status`)
-        .set('Authorization', `Bearer ${restaurantToken}`)
-        .send({ status });
-    }
+    await advanceOrderLifecycle(request, app, orderId, restaurantToken);
     const res = await request(app)
       .patch(`/api/orders/${orderId}/status`)
       .set('Authorization', `Bearer ${restaurantToken}`)

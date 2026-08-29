@@ -20,9 +20,7 @@ const CATEGORIES = [
 ];
 
 export default function RestaurantMenu() {
-  console.log("✅ Rendering RestaurantMenu");
-  const { restaurant, isLoggedIn: isLoggedInCtx, isRestaurantLoggedIn } = useRestaurant();
-  const isLoggedIn = (typeof isLoggedInCtx === 'boolean' ? isLoggedInCtx : isRestaurantLoggedIn);
+  const { restaurant, isLoggedIn } = useRestaurant();
   const navigate = useNavigate();
 
   const restaurantId = useMemo(
@@ -68,11 +66,8 @@ export default function RestaurantMenu() {
   }, [restaurantId]);
 
   const fetchMenu = async () => {
-    // We’ll load the restaurant and read its menu array
-    const data = await restaurantAPI.getById(restaurantId);
-    // Expect data like { ... , menu: [ ... ] }
-    const items = Array.isArray(data?.menu) ? data.menu : [];
-    setMenuItems(items);
+    const items = await restaurantAPI.getOwnMenu();
+    setMenuItems(Array.isArray(items) ? items : []);
   };
 
   /** ---------- image upload (client preview as base64) ---------- */
@@ -100,10 +95,10 @@ export default function RestaurantMenu() {
 
     try {
       if (editingItem) {
-        await restaurantAPI.updateMenuItem(restaurantId, editingItem._id, payload);
+        await restaurantAPI.updateMenuItem(editingItem.id || editingItem._id, payload);
         alert('Menu item updated!');
       } else {
-        await restaurantAPI.addMenuItem(restaurantId, payload);
+        await restaurantAPI.addMenuItem(payload);
         alert('Menu item added!');
       }
       await fetchMenu();
@@ -131,7 +126,7 @@ export default function RestaurantMenu() {
   const onDelete = async (itemId) => {
     if (!window.confirm('Delete this menu item?')) return;
     try {
-      await restaurantAPI.deleteMenuItem(restaurantId, itemId);
+      await restaurantAPI.deleteMenuItem(itemId);
       await fetchMenu();
       alert('Menu item deleted');
     } catch (err) {
@@ -142,7 +137,7 @@ export default function RestaurantMenu() {
 
   const onToggleAvailable = async (item) => {
     try {
-      await restaurantAPI.updateMenuItem(restaurantId, item._id, {
+      await restaurantAPI.updateMenuItem(item.id || item._id, {
         ...item,
         available: !item.available
       });
@@ -300,7 +295,7 @@ export default function RestaurantMenu() {
 
                 <div className="form-row">
                   <div className="form-group">
-                    <label>Price (£) *</label>
+                    <label>Price (₹) *</label>
                     <input
                       type="number"
                       step="0.01"

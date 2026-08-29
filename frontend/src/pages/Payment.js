@@ -155,13 +155,10 @@ function Payment() {
 
       const order = await orderAPI.placeOrder(
         {
-          user: user.id,
           restaurant: restaurant.id,
           items: cartItems.map((item) => ({
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
             menuItem: item.id,
+            quantity: item.quantity,
           })),
           deliveryAddress: {
             ...deliveryAddress,
@@ -174,8 +171,10 @@ function Payment() {
         {
           method: paymentMethod === 'cod' ? 'cod' : paymentMethod === 'upi' ? 'upi' : 'card',
           idempotencyKey,
-          cardNumber: cardDetails.cardNumber?.replace(/\s/g, ''),
-          upiId,
+          ...(paymentMethod === 'upi' ? { upiId } : {}),
+          ...(paymentMethod === 'card'
+            ? { cardNumber: cardDetails.cardNumber?.replace(/\s/g, '') }
+            : {}),
         }
       );
 
@@ -189,7 +188,6 @@ function Payment() {
 
       navigate(`/orders/${order._id || order.id}/track`);
     } catch (err) {
-      console.error('Payment error:', err);
       setError(err.message || 'Payment failed. Please try again.');
     } finally {
       setLoading(false);

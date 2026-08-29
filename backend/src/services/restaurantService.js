@@ -2,9 +2,53 @@ const restaurantRepository = require('../repositories/restaurantRepository');
 const { mapRestaurant, mapMenuItem } = require('../utils/mappers');
 const AppError = require('../utils/AppError');
 const { apiCache } = require('../utils/ttlCache');
+const geocodeService = require('./geocodeService');
 
 function cacheKey(prefix, obj) {
   return `${prefix}:${JSON.stringify(obj)}`;
+}
+
+function normalizeProfileFields(fields) {
+  const normalized = { ...fields };
+  if (typeof normalized.address === 'string') {
+    normalized.address = { street: normalized.address };
+  }
+  if (typeof normalized.cuisine === 'string') {
+    normalized.cuisine = normalized.cuisine
+      .split(',')
+      .map((part) => part.trim())
+      .filter(Boolean);
+  }
+  return normalized;
+}
+
+async function geocodeAndApplyCoords(restaurantId, address, fields) {
+  const existing = await restaurantRepository.findById(restaurantId);
+  if (!existing) return fields;
+
+  const mergedAddress = {
+    street: address.street ?? existing.street,
+    city: address.city ?? existing.city,
+    state: address.state ?? existing.state,
+    zipCode: address.zipCode ?? existing.zip_code,
+  };
+  const coords = await geocodeService.geocodeAddress(mergedAddress);
+  if (coords) {
+    return { ...fields, latitude: coords.lat, longitude: coords.lng };
+  }
+  return fields;
+}
+
+/** Geocode address and seed a starter quality profile so discover/nearby work. */
+async function provisionNewRestaurant(restaurantId, address) {
+  let fields = {};
+  if (address) {
+    fields = await geocodeAndApplyCoords(restaurantId, address, fields);
+  }
+  if (fields.latitude != null) {
+    await restaurantRepository.updateProfile(restaurantId, fields);
+  }
+  await restaurantRepository.createQualityProfile(restaurantId);
 }
 
 async function listActive() {
@@ -100,7 +144,11 @@ async function deleteMenuItem(restaurantId, menuItemId) {
 async function updateProfile(restaurantId, fields) {
   // eslint-disable-next-line no-unused-vars
   const { password, email, ...safeFields } = fields; // password/email changes go through authService, not here
-  const updated = await restaurantRepository.updateProfile(restaurantId, safeFields);
+  let normalized = normalizeProfileFields(safeFields);
+  if (normalized.address) {
+    normalized = await geocodeAndApplyCoords(restaurantId, normalized.address, normalized);
+  }
+  const updated = await restaurantRepository.updateProfile(restaurantId, normalized);
   if (!updated) throw new AppError('Restaurant not found', 404);
   return mapRestaurant(updated, []);
 }
@@ -117,4 +165,5 @@ module.exports = {
   updateMenuItem,
   deleteMenuItem,
   updateProfile,
+  provisionNewRestaurant,
 };

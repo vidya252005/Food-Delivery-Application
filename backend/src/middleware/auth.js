@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const userRepository = require('../repositories/userRepository');
 const restaurantRepository = require('../repositories/restaurantRepository');
+const deliveryPartnerRepository = require('../repositories/deliveryPartnerRepository');
 const env = require('../config/env');
 
 function extractToken(req) {
@@ -64,6 +65,32 @@ const authenticateUser = async (req, res, next) => {
   }
 };
 
+const authenticateDeliveryPartner = async (req, res, next) => {
+  try {
+    const token = extractToken(req);
+    if (!token) {
+      return res.status(401).json({ message: 'You are not logged in! Please log in to get access.' });
+    }
+
+    const decoded = jwt.verify(token, env.JWT_SECRET);
+    if (decoded.role !== 'delivery_partner') {
+      return res.status(401).json({ message: 'Invalid token. Please log in again.' });
+    }
+
+    const partner = await deliveryPartnerRepository.findById(decoded.id);
+    if (!partner) {
+      return res.status(401).json({ message: 'The delivery partner belonging to this token no longer exists.' });
+    }
+
+    req.deliveryPartner = partner;
+    req.partnerId = partner.id;
+    next();
+  } catch (error) {
+    console.error('Authentication error:', error.message);
+    return res.status(401).json({ message: 'Invalid token. Please log in again.' });
+  }
+};
+
 const authenticateAdmin = async (req, res, next) => {
   try {
     const token = extractToken(req);
@@ -89,4 +116,9 @@ const authenticateAdmin = async (req, res, next) => {
   }
 };
 
-module.exports = { authenticateRestaurant, authenticateUser, authenticateAdmin };
+module.exports = {
+  authenticateRestaurant,
+  authenticateUser,
+  authenticateDeliveryPartner,
+  authenticateAdmin,
+};
