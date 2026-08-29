@@ -25,7 +25,7 @@ describe('POST /api/auth/user/register', () => {
     expect(typeof res.body.token).toBe('string');
     expect(res.body.data).toEqual({
       role: 'user',
-      user: { id: expect.any(String), name: 'Asha Rao', email: 'asha@example.com' },
+      user: { id: expect.any(String), name: 'Asha Rao', email: 'asha@example.com', role: 'user' },
     });
   });
 

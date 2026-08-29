@@ -153,7 +153,7 @@ describe('POST /api/orders', () => {
       });
 
     expect(res.status).toBe(400);
-    expect(res.body.message).toMatch(/does not belong/i);
+    expect(res.body.error).toMatch(/does not belong/i);
   });
 
   test('400s when cart line omits menuItem id', async () => {
@@ -169,7 +169,7 @@ describe('POST /api/orders', () => {
       });
 
     expect(res.status).toBe(400);
-    expect(res.body.message).toMatch(/menu item/i);
+    expect(res.body.error).toMatch(/menu item/i);
   });
 });
 

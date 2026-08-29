@@ -1,7 +1,9 @@
 const { pool } = require('../../src/config/db');
+const { apiCache } = require('../../src/utils/ttlCache');
 
 /** Wipes every table between tests so one test's data can't leak into the next. */
 async function resetDb() {
+  apiCache.store.clear();
   await pool.query(
     `TRUNCATE feedback, order_items, orders, menu_items, restaurants, users, support_tickets, schema_migrations RESTART IDENTITY CASCADE`
   );
